@@ -10,7 +10,7 @@ https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R04_ROSSIA1_VLGOB/variant.m3u8
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R04_ROSSIA2_VLGOB/variant.m3u8
 
 #EXTINF:-1 group-title="Федеральные",НТВ
-https://zabava-htlive.cdn.ngenix.net/hls/CH_NTV/variant.m3u8
+https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R03_NTV_VLGOB/variant.m3u8
 
 #EXTINF:-1 group-title="Федеральные",Пятый канал
 https://zabava-htlive.cdn.ngenix.net/hls/CH_5TV/variant.m3u8
