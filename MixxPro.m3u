@@ -10,7 +10,7 @@ https://vgtrkregion-reg.cdnvideo.ru/vgtrk/0/russia1-hd/index.m3u8
 http://catchup.videoline.ru/match/tracks-v1a1/mono.m3u8
 
 #EXTINF:-1 group-title="Федеральные",НТВ
-http://50.7.28.226/8156/index.m3u8
+https://zabava-htlive.cdn.ngenix.net/hls/CH_NTV/variant.m3u8
 
 #EXTINF:-1 group-title="Федеральные",Пятый канал
 http://95.66.188.74/5kanal/index.m3u8
