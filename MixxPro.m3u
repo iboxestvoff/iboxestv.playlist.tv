@@ -37,7 +37,7 @@ https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R02_RENTV_VLGOB/variant.m3u8
 https://tvspas.mediacdn.ru/cdn/spas/tracks-v1a1/mono.ts.m3u8
 
 #EXTINF:-1 group-title="Федеральные",СТС
-https://zabava-htlive.cdn.ngenix.net/hls/CH_STS/variant.m3u8
+https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R02_STS_VLGOB/variant.m3u8
 
 #EXTINF:-1 group-title="Федеральные",Домашний
 https://zabava-htlive.cdn.ngenix.net/hls/CH_DOMASHNIY/variant.m3u8
