@@ -386,8 +386,8 @@ http://chanson.hostingradio.ru:8041/chanson128.mp3
 http://icecast.vgtrk.cdnvideo.ru/kulturafm_mp3_64kbps
 #EXTINF:-1 group-title="Радио",Радио Страна 
 http://icecast.stranafm.cdnvideo.ru/stranafm
-#EXTINF:-1 group-title="Радио", Rock FM
-http://nashe1.hostingradio.ru/rock-128.mp3
+#EXTINF:-1 group-title="Радио", Gazan FM
+https://iboxestv-playlist-tv.onrender.com/gazan_fm.mp3
 #EXTINF:-1 group-title="Радио",Спутник FM 
 http://radio.mediacdn.ru/sputnik_fm.mp3
 #EXTINF:-1 group-title="Радио", Ретро FM
