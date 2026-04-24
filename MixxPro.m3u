@@ -46,7 +46,7 @@ https://zabava-htlive.cdn.ngenix.net/hls/CH_DOMASHNIY/variant.m3u8
 https://zabava-htlive.cdn.ngenix.net/hls/CH_TV3/variant.m3u8
 
 #EXTINF:-1 group-title="Федеральные",Пятница!
-https://river-1.rutube.ru/stream/genetta-316.m9.rutube.ru/M3a2syQ8Z2LgXxORcjMa7Q/1765737918/9f87a9a0cecbe773be6fddcbd93585ac/1080p_stream.m3u8
+https://zabava-htlive.cdn.ngenix.net/hls/CH_PYATNIZZA/variant.m3u8
 
 #EXTINF:-1 group-title="Федеральные",Звезда
 https://tvchannelstream1.tvzvezda.ru/cdn/tvzvezda/playlist_hdhigh.m3u8
