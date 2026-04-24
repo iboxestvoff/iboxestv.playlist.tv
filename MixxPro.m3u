@@ -58,7 +58,7 @@ https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R02_MIR_VLGOB/variant.m3u8
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R01_TNT_VLGOB/variant.m3u8
 
 #EXTINF:-1 group-title="Федеральные",МУЗ ТВ
-https://zabava-htlive.cdn.ngenix.net/hls/CH_MUZTV/variant.m3u8
+https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R06_MUZTV_VLGOB/variant.m3u8
 
 #EXTINF:-1 group-title="Федеральные", МТВ Волгоград
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R01_MTV/variant.m3u8
