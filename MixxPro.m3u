@@ -55,7 +55,7 @@ https://tvchannelstream1.tvzvezda.ru/cdn/tvzvezda/playlist_hdhigh.m3u8
 http://hls.mirtv.cdnvideo.ru/mirtv-parampublish/mirtv_2500/playlist.m3u8
 
 #EXTINF:-1 group-title="Федеральные",ТНТ
-http://50.7.28.226/8311/index.m3u8
+https://zabava-htlive.cdn.ngenix.net/hls/CH_TNT/variant.m3u8
 
 #EXTINF:-1 group-title="Федеральные",МУЗ ТВ
 https://river-1.rutube.ru/stream/genetta-320.m9.rutube.ru/Z_jN8CZYSTzhfJMPjM5UOQ/1765737928/df6fe73494a26f74da51573fd97b9baa/1080p_stream.m3u8
