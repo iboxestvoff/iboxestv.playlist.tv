@@ -37,7 +37,7 @@ http://95.66.188.74/RenTV/mono.m3u8
 https://tvspas.mediacdn.ru/cdn/spas/tracks-v1a1/mono.ts.m3u8
 
 #EXTINF:-1 group-title="Федеральные",СТС
-http://95.66.188.74/CTC_HD/mono.m3u8
+https://streaming.televizor-24-tochka.ru/live/16.m3u8
 
 #EXTINF:-1 group-title="Федеральные",Домашний
 http://50.7.28.226/9204/index.m3u8
