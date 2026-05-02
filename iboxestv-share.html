@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IBOXESTV | Поделись с другом!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080c12;
+      --surface: #0f1520;
+      --accent: #00e5ff;
+      --accent2: #ff3e6c;
+      --text: #e8f0fe;
+      --muted: #5a6880;
+      --glow: 0 0 30px rgba(0,229,255,0.25);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Animated background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: gridShift 20s linear infinite;
+      pointer-events: none;
+    }
+
+    /* Radial glow center */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0,229,255,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes gridShift {
+      from { background-position: 0 0; }
+      to { background-position: 40px 40px; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: translate(-50%,-50%) scale(1); }
+      50% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 36px;
+      padding: 40px 24px;
+      text-align: center;
+    }
+
+    /* Logo */
+    .logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      animation: fadeDown 0.8s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(56px, 14vw, 96px);
+      letter-spacing: 8px;
+      line-height: 1;
+      background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+      filter: drop-shadow(0 0 24px rgba(0,229,255,0.4));
+    }
+
+    .tagline {
+      font-size: 13px;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .divider {
+      width: 80px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      animation: fadeIn 1s 0.4s both;
+    }
+
+    /* Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid rgba(0,229,255,0.12);
+      border-radius: 20px;
+      padding: 36px 32px;
+      width: min(420px, 90vw);
+      box-shadow: 0 8px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+      animation: fadeUp 0.9s 0.2s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    .card-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+
+    /* Options */
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: rgba(0,229,255,0.04);
+      border: 1px solid rgba(0,229,255,0.1);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      user-select: none;
+    }
+
+    .option:hover {
+      background: rgba(0,229,255,0.09);
+      border-color: rgba(0,229,255,0.3);
+      transform: translateX(4px);
+    }
+
+    .option.selected {
+      background: rgba(0,229,255,0.13);
+      border-color: var(--accent);
+      box-shadow: 0 0 16px rgba(0,229,255,0.15);
+    }
+
+    .option-radio {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--muted);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s;
+    }
+
+    .option.selected .option-radio {
+      border-color: var(--accent);
+    }
+
+    .option-radio::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0;
+      transform: scale(0);
+      transition: all 0.2s cubic-bezier(.34,1.56,.64,1);
+    }
+
+    .option.selected .option-radio::after {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .option-icon {
+      font-size: 20px;
+    }
+
+    .option-text {
+      text-align: left;
+    }
+
+    .option-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .option-desc {
+      font-size: 11px;
+      color: var(--muted);
+      word-break: break-all;
+    }
+
+    /* Share button */
+    .btn-share {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent) 0%, #0090a8 100%);
+      color: #000;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 24px rgba(0,229,255,0.3);
+    }
+
+    .btn-share::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.25), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .btn-share:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 36px rgba(0,229,255,0.45);
+    }
+
+    .btn-share:hover::before { opacity: 1; }
+
+    .btn-share:active {
+      transform: translateY(0);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #111e2d;
+      border: 1px solid var(--accent);
+      color: var(--text);
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5), var(--glow);
+      z-index: 100;
+      transition: transform 0.4s cubic-bezier(.34,1.56,.64,1), opacity 0.3s;
+      opacity: 0;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Modal overlay for image */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8,12,18,0.92);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 20px;
+      animation: fadeIn 0.3s both;
+    }
+
+    .modal.open { display: flex; }
+
+    .modal img {
+      max-width: min(340px, 80vw);
+      border-radius: 16px;
+      border: 2px solid var(--accent);
+      box-shadow: var(--glow);
+    }
+
+    .modal-close {
+      background: none;
+      border: 1px solid var(--muted);
+      color: var(--text);
+      padding: 10px 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .modal-close:hover { border-color: var(--accent2); color: var(--accent2); }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="logo-wrap">
+    <div class="logo">IBOXESTV</div>
+    <div class="tagline">Поделись с другом</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <div class="card-title">Выбери формат</div>
+
+    <div class="options">
+      <div class="option selected" id="opt-link" onclick="select('link')">
+        <div class="option-radio"></div>
+        <div class="option-icon">🔗</div>
+        <div class="option-text">
+          <div class="option-label">Отправить ссылку</div>
+          <div class="option-desc">Ссылка для вашего друга!</div>
+        </div>
+      </div>
+
+      <div class="option" id="opt-image" onclick="select('image')">
+        <div class="option-radio"></div>
+        <div class="option-icon">📷</div>
+        <div class="option-text">
+          <div class="option-label">Отправить QR-фото</div>
+          <div class="option-desc">Картинка с QR-кодом сайта</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-share" onclick="doShare()">⚡ Поделиться</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Image modal -->
+<div class="modal" id="modal">
+  <img src="https://iboxestv-playlist-tv.onrender.com/qr-give.png" alt="QR IBOXESTV" />
+  <button class="modal-close" onclick="closeModal()">✕ Закрыть</button>
+</div>
+
+<script>
+  const LINK = 'https://vizvi.ru/iboxestv';
+  const IMAGE_URL = 'https://iboxestv-playlist-tv.onrender.com/qr-give.png';
+  let current = 'link';
+
+  function select(type) {
+    current = type;
+    document.getElementById('opt-link').classList.toggle('selected', type === 'link');
+    document.getElementById('opt-image').classList.toggle('selected', type === 'image');
+  }
+
+  async function doShare() {
+    if (current === 'link') {
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: 'IBOXESTV', url: LINK });
+          showToast('✅ Поделились ссылкой!');
+        } catch(e) {
+          copyLink();
+        }
+      } else {
+        copyLink();
+      }
+    } else {
+      // Image share
+      if (navigator.share) {
+        try {
+          const resp = await fetch(IMAGE_URL);
+          const blob = await resp.blob();
+          const file = new File([blob], 'iboxestv-qr.png', { type: 'image/png' });
+          await navigator.share({ title: 'IBOXESTV', files: [file] });
+          showToast('✅ Картинка отправлена!');
+        } catch(e) {
+          openModal();
+        }
+      } else {
+        openModal();
+      }
+    }
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(LINK).then(() => {
+      showToast('📋 Ссылка скопирована!');
+    }).catch(() => {
+      showToast('🔗 ' + LINK);
+    });
+  }
+
+  function openModal() {
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+  }
+
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
+</body>
+</html>
