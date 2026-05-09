@@ -431,7 +431,7 @@ https://mhd128.iptv2022.com/p/-0IFJdg3sj4Be2PLyXNTaA,1765227608/streaming/detmir
 http://178.163.2.144:4022/udp/234.0.0.153:2000
 
 #EXTINF:-1 group-title="Детские",Nickelodeon
-https://vod.splay.uz/live_splay/original/Nickelodeon/tracks-v1a1/mono.m3u8
+http://tv.woobl.ru:9090/channel/n47dbeb87/index.m3u8?q=6b9b9686f4e5713d39b5472416bf1854
 
 #EXTINF:-1 group-title="Детские",Мультиландия
 https://mhd128.iptv2022.com/p/HN7Y_Edir7xQej1p1Rj8oQ,1765227608/streaming/multimania/324/1/tracks-v5a1/mono.m3u8
