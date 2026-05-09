@@ -421,8 +421,8 @@ http://tv.woobl.ru:9090/play/idn18f08d51/69ff1b01f6c4ea804f4ca4e1.m3u8?q=6b9b968
 #EXTINF:-1 group-title="Детские",Лёва
 https://minsk-cache03t.voka.tv/live/2424-req_5k_v5.m3u8
 
-#EXTINF:-1 group-title="Детские",Детский мир 
-https://mhd128.iptv2022.com/p/-0IFJdg3sj4Be2PLyXNTaA,1765227608/streaming/detmir/324/1/tracks-v5a1/mono.m3u8
+#EXTINF:-1 group-title="Детские",Cartonito
+http://tv.woobl.ru:9090/channel/748c7d82/index.m3u8?q=6b9b9686f4e5713d39b5472416bf1854
 
 #EXTINF:-1 group-title="Детские",Gulli Girl
 http://178.163.2.144:4022/udp/234.0.0.153:2000
