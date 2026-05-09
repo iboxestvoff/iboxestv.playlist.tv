@@ -349,8 +349,8 @@ http://50.7.28.226/8164/index.m3u8
 #EXTINF:-1 group-title="Развлекательные",Живи
 https://mhd128.iptv2022.com/p/lYhBKww0rlGohUrEAmYLYw,1765227610/streaming/jivi/324/1/tracks-v5a1/mono.m3u8
 
-#EXTINF:-1 group-title="Развлекательные",7tv
-http://185.164.82.18:9009/aDxLhVQm_7TV
+#EXTINF:-1 group-title="Развлекательные",RUTUBE TV
+https://bl.rutube.ru/livestream/9ae8e8a6dc58bdad66190475f9872ecd/index.m3u8?s=U_og5iHG6xVp0V3KXYMB0g&e=2070623479&scheme=https
 
 #EXTINF:-1 group-title="Развлекательные",БОБЁР
 http://95.66.188.74/Bober/mono.m3u8
