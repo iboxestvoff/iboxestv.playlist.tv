@@ -501,6 +501,16 @@ https://mhd128.iptv2022.com/p/MbPdUXX5paDdCA-pujlKzg,1765227608/streaming/kineko
 #EXTINF:-1 group-title="Кино",Кино ТВ
 http://50.7.28.226/8207/index.m3u8
 
+#EXTINF:-1 group-title="Кино",НТВ Право
+https://cdn.ntv.ru/th_pravo/playlist.m3u8
+#EXTINF:-1 group-title="Кино",НТВ Мир
+http://tv.woobl.ru:9091/channel/9cbd3c0/index.m3u8?q=6b9b9686f4e5713d39b5472416bf1854
+#EXTINF:-1 group-title="Кино",НТВ Хит
+https://cdn2.ntv.ru/th_hit/playlist.m3u8
+#EXTINF:-1 group-title="Кино",НТВ Сериал
+https://cdn.ntv.ru/th_serial/playlist.m3u8
+#EXTINF:-1 group-title="Кино",НТВ Стиль
+https://cdn2.ntv.ru/th_style/tracks-v1a1/mono.m3u8
 
 #EXTINF:-1 group-title="Релакс",Релакс в лесу
 http://timeshift.arpinet.am/232/mpegts
