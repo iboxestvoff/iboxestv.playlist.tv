@@ -459,6 +459,10 @@ http://109.94.1.3:8080/132/index.m3u8
 #EXTINF:-1 group-title="Детские",Ani
 https://stv.mediacdn.ru/live/cdn/ani/playlist.m3u8
 
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/ru/2/24/Jetix.png?_=20170207225409" group-title="Детские",Jetix
+http://foxkids-online.ru/hls/test_240p264kbs/index.m3u8
+
+
 #EXTINF:-1 group-title="Кино",Amedia 1
 http://50.7.28.226/8035/index.m3u8
 #EXTINF:-1 group-title="Кино",Amedia 2
