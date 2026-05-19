@@ -434,8 +434,8 @@ http://tv.woobl.ru:9090/channel/748c7d82/index.m3u8?q=6b9b9686f4e5713d39b5472416
 #EXTINF:-1 group-title="Детские",Мультиландия
 https://mhd128.iptv2022.com/p/HN7Y_Edir7xQej1p1Rj8oQ,1765227608/streaming/multimania/324/1/tracks-v5a1/mono.m3u8
 
-#EXTINF:-1 group-title="Детские",Рыжий
-http://95.66.188.74/RYZHIY/mono.m3u8
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/d/d4/Disney_Channel_Russia.png" group-title="Детские",Каналы Disney
+https://vkvsd175.okcdn.ru/cmaf/8380992719463/sig/EXlW_AcyMiU/srcIp/104.23.170.28/urls/185.226.53.63/expires/1779655758735/clientType/13/srcAg/CHROME_ANDROID/fromCache/1/mid/9707377929063/id/8380992719463/get/COfWwObCmgIQ6AcYBjIICgYIgA8QuAg6BAjE2AJaBggDEAIoF2ICCCCrzj0n6kIZSQ/track.m3u8
 
 #EXTINF:-1 group-title="Детские", Cartoon Classics
 
