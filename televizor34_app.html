@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Телевизор 34</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── LIGHT THEME (default) ── */
+    :root {
+      --bg: #EEF1F8;
+      --white: #FFFFFF;
+      --blue: #1A56DB;
+      --blue-dark: #1447B2;
+      --blue-light: #EBF0FD;
+      --blue-icon: #E8EFFE;
+      --text: #111827;
+      --sub: #6B7280;
+      --border: #E5E8EF;
+      --green: #22C55E;
+      --card-bg: #FFFFFF;
+      --input-bg: #FAFAFA;
+      --modal-bg: #FFFFFF;
+    }
+
+    /* ── DARK THEME ── */
+    body.dark {
+      --bg: #0F1117;
+      --white: #1A1D27;
+      --blue: #4F80FF;
+      --blue-dark: #3A6AEE;
+      --blue-light: #1E2640;
+      --blue-icon: #1E2640;
+      --text: #E8EAFF;
+      --sub: #7B84A8;
+      --border: #252A3D;
+      --green: #22C55E;
+      --card-bg: #1A1D27;
+      --input-bg: #0F1117;
+      --modal-bg: #1A1D27;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .phone-wrap {
+      width: 100%; max-width: 420px;
+      min-height: 100vh;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      position: relative;
+      padding-bottom: 80px;
+      transition: background 0.3s;
+    }
+
+    /* ══════════════════════════════════
+       THEME PICKER SPLASH SCREEN
+    ══════════════════════════════════ */
+    #theme-splash {
+      position: fixed; inset: 0;
+      background: #0F1117;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 999;
+      padding: 32px 24px;
+      gap: 0;
+    }
+    .splash-logo {
+      font-size: 52px; margin-bottom: 16px;
+    }
+    .splash-title {
+      font-size: 24px; font-weight: 800;
+      color: #fff; margin-bottom: 6px; text-align: center;
+    }
+    .splash-sub {
+      font-size: 14px; color: #7B84A8;
+      margin-bottom: 40px; text-align: center;
+    }
+    .splash-question {
+      font-size: 15px; font-weight: 700;
+      color: #E8EAFF; margin-bottom: 18px; text-align: center;
+    }
+    .theme-cards {
+      display: flex; gap: 14px; width: 100%; max-width: 340px;
+    }
+    .theme-card {
+      flex: 1;
+      border-radius: 18px;
+      border: 2px solid transparent;
+      padding: 20px 12px 16px;
+      cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      transition: border-color 0.2s, transform 0.15s;
+      position: relative;
+    }
+    .theme-card:hover { transform: translateY(-3px); }
+    .theme-card.light-card {
+      background: #EEF1F8;
+      border-color: #D1D9EF;
+    }
+    .theme-card.dark-card {
+      background: #1A1D27;
+      border-color: #252A3D;
+    }
+    .theme-card.selected { border-color: #4F80FF; }
+    .theme-card .tc-preview {
+      width: 52px; height: 52px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+    }
+    .light-card .tc-preview { background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,0.10); }
+    .dark-card  .tc-preview { background: #0F1117; box-shadow: 0 2px 12px rgba(0,0,0,0.4); }
+    .theme-card .tc-label {
+      font-size: 14px; font-weight: 700;
+    }
+    .light-card .tc-label { color: #111827; }
+    .dark-card  .tc-label { color: #E8EAFF; }
+    .theme-card .tc-check {
+      position: absolute; top: 10px; right: 10px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: #4F80FF; color: #fff;
+      font-size: 11px; font-weight: 700;
+      display: none; align-items: center; justify-content: center;
+    }
+    .theme-card.selected .tc-check { display: flex; }
+    .btn-splash-continue {
+      margin-top: 28px;
+      width: 100%; max-width: 340px;
+      background: #4F80FF;
+      color: #fff; border: none;
+      border-radius: 14px; padding: 15px;
+      font-size: 16px; font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .btn-splash-continue.ready { opacity: 1; pointer-events: auto; }
+    .btn-splash-continue.ready:hover { background: #3A6AEE; }
+
+    /* ── HEADER ── */
+    .top-bar {
+      background: var(--white);
+      padding: 14px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .top-bar-logo {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 17px; font-weight: 700; color: var(--blue);
+    }
+    .top-bar-logo svg { width: 22px; height: 22px; }
+    .top-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--blue-light); color: var(--blue);
+      font-size: 14px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; border: 1.5px solid var(--blue);
+    }
+
+    /* ── SCREENS ── */
+    .screen { display: none; flex-direction: column; flex: 1; padding: 20px 16px; gap: 16px; }
+    .screen.active { display: flex; }
+
+    /* ── HERO BANNER ── */
+    .hero {
+      background: var(--blue);
+      border-radius: 16px; padding: 18px 20px; color: #fff;
+    }
+    .hero-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .hero-user { display: flex; align-items: center; gap: 12px; }
+    .hero-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255,255,255,0.22);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; font-weight: 700;
+    }
+    .hero-greeting { font-size: 13px; opacity: 0.8; margin-bottom: 2px; }
+    .hero-name { font-size: 20px; font-weight: 700; }
+    .hero-badge {
+      background: rgba(255,255,255,0.18); border-radius: 8px;
+      padding: 6px 12px; font-size: 13px; font-weight: 600;
+      display: flex; align-items: center; gap: 6px; white-space: nowrap;
+    }
+    .hero-status {
+      background: rgba(255,255,255,0.13); border-radius: 10px;
+      padding: 9px 14px;
+      display: flex; align-items: center; justify-content: space-between; font-size: 14px;
+    }
+    .dot-green { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+    .section-label { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: -4px; }
+
+    .card {
+      background: var(--card-bg); border-radius: 16px;
+      overflow: hidden; border: 1px solid var(--border);
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .list-row {
+      display: flex; align-items: center;
+      padding: 14px 16px; gap: 14px;
+      border-bottom: 1px solid var(--border);
+      transition: border-color 0.3s;
+    }
+    .list-row:last-child { border-bottom: none; }
+    .row-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--blue-icon);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: background 0.3s;
+    }
+    .row-icon svg { width: 18px; height: 18px; }
+    .row-text { flex: 1; }
+    .row-label { font-size: 12px; color: var(--sub); margin-bottom: 2px; }
+    .row-value { font-size: 15px; font-weight: 600; color: var(--text); }
+    .row-badge { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 99px; }
+    .badge-green { background: #DCFCE7; color: #15803D; }
+    .badge-gray  { background: var(--blue-light); color: var(--sub); }
+    .badge-blue  { background: var(--blue-light); color: var(--blue); }
+
+    .btn-playlist {
+      background: var(--blue); color: #fff; border: none;
+      border-radius: 14px; padding: 17px 20px;
+      font-size: 16px; font-weight: 700; width: 100%; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background 0.18s; gap: 10px;
+    }
+    .btn-playlist:hover { background: var(--blue-dark); }
+    .btn-playlist .left { display: flex; align-items: center; gap: 10px; }
+    .btn-playlist svg { width: 20px; height: 20px; }
+
+    /* ── PROFILE ── */
+    .profile-hero {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 28px 20px 24px;
+      background: var(--card-bg); border-radius: 16px;
+      border: 1px solid var(--border); gap: 8px;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .profile-avatar-big {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: var(--blue); color: #fff;
+      font-size: 28px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 6px;
+    }
+    .profile-name-big { font-size: 21px; font-weight: 700; }
+    .profile-sub { font-size: 13px; color: var(--sub); }
+
+    .change-avatar-btn {
+      margin-top: 2px; background: var(--blue-light); color: var(--blue);
+      border: none; border-radius: 99px; padding: 6px 16px;
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.18s;
+    }
+    .change-avatar-btn:hover { background: var(--blue-dark); color: #fff; }
+
+    .avatar-picker-card {
+      background: var(--card-bg); border-radius: 16px;
+      border: 1px solid var(--border); padding: 18px 16px 16px;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .avatar-picker-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: var(--text); }
+    .avatar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .av-item {
+      aspect-ratio: 1; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; cursor: pointer;
+      border: 2.5px solid transparent;
+      transition: border-color 0.15s, transform 0.12s; position: relative;
+    }
+    .av-item:hover { transform: scale(1.08); }
+    .av-item.selected { border-color: var(--blue); }
+    .av-item.selected::after {
+      content: '✓'; position: absolute; bottom: -2px; right: -2px;
+      width: 18px; height: 18px; background: var(--blue); color: #fff;
+      border-radius: 50%; font-size: 10px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 18px; text-align: center;
+    }
+
+    /* ── THEME TOGGLE IN PROFILE ── */
+    .theme-row {
+      display: flex; align-items: center;
+      padding: 14px 16px; gap: 14px;
+      background: var(--card-bg); border-radius: 16px;
+      border: 1px solid var(--border);
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .theme-toggle-wrap { display: flex; gap: 8px; margin-left: auto; }
+    .theme-pill {
+      padding: 6px 14px; border-radius: 99px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: transparent; color: var(--sub);
+      transition: all 0.18s;
+    }
+    .theme-pill.active {
+      background: var(--blue); color: #fff; border-color: var(--blue);
+    }
+
+    /* ── NAME CARD ── */
+    .name-card {
+      background: var(--card-bg); border-radius: 16px;
+      border: 1px solid var(--border); padding: 20px;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .name-card-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .name-card-sub { font-size: 13px; color: var(--sub); margin-bottom: 14px; }
+    .input-wrap {
+      display: flex; align-items: center;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 0 12px; background: var(--input-bg);
+      margin-bottom: 12px; transition: border-color 0.2s, background 0.3s;
+    }
+    .input-wrap:focus-within { border-color: var(--blue); }
+    .input-wrap svg { width: 18px; height: 18px; color: var(--sub); flex-shrink: 0; }
+    .input-wrap input {
+      flex: 1; border: none; background: transparent;
+      padding: 13px 10px; font-size: 15px; color: var(--text); outline: none;
+    }
+    .input-wrap input::placeholder { color: var(--sub); }
+    .btn-save {
+      width: 100%; background: var(--blue); color: #fff; border: none;
+      border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background 0.18s, opacity 0.2s;
+    }
+    .btn-save:disabled { opacity: 0.38; cursor: not-allowed; }
+    .btn-save:not(:disabled):hover { background: var(--blue-dark); }
+    .btn-save svg { width: 17px; height: 17px; }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 420px;
+      background: var(--white); border-top: 1px solid var(--border);
+      display: flex; z-index: 50;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .nav-tab {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      padding: 10px 0 12px; cursor: pointer; gap: 3px;
+      background: none; border: none;
+    }
+    .nav-tab svg { width: 22px; height: 22px; color: var(--sub); }
+    .nav-tab span { font-size: 12px; color: var(--sub); font-weight: 500; }
+    .nav-tab.active svg { color: var(--blue); }
+    .nav-tab.active span { color: var(--blue); font-weight: 700; }
+    .nav-icon-wrap { width: 40px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 20px; }
+    .nav-tab.active .nav-icon-wrap { background: var(--blue-light); }
+
+    /* ── MODAL ── */
+    #overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(3px);
+      z-index: 200; align-items: flex-end; justify-content: center; padding: 0;
+    }
+    #overlay.open { display: flex; }
+    .modal-sheet {
+      width: 100%; max-width: 420px;
+      background: var(--modal-bg); border-radius: 22px 22px 0 0;
+      border-top: 1px solid var(--border);
+      padding: 24px 20px 32px; animation: slideUp .22s ease;
+      transition: background 0.3s;
+    }
+    @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 99px; margin: 0 auto 20px; }
+    .modal-title { font-size: 17px; font-weight: 700; text-align: center; margin-bottom: 4px; color: var(--text); }
+    .modal-sub   { font-size: 14px; color: var(--sub); text-align: center; margin-bottom: 20px; }
+    .pl-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: stretch; }
+    .pl-row .pl-btn { flex: 1; margin-bottom: 0; }
+    .pl-btn {
+      width: 100%; background: var(--input-bg);
+      border: 1.5px solid var(--border); border-radius: 14px;
+      padding: 15px 18px; font-size: 15px; font-weight: 600;
+      color: var(--text); cursor: pointer;
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 10px; transition: all 0.17s; text-align: left;
+    }
+    .pl-btn:hover { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
+    .pl-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .pl-btn .pl-icon { font-size: 22px; }
+    .pl-btn .pl-check { margin-left: auto; font-size: 18px; display: none; }
+    .pl-btn.active .pl-check { display: block; }
+    .btn-copy {
+      background: var(--blue-light); border: 1.5px solid var(--border);
+      border-radius: 14px; padding: 0 14px; color: var(--blue);
+      font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: background 0.18s;
+    }
+    .btn-copy:hover { background: var(--blue-dark); color: #fff; }
+    .btn-copy.copied { background: #DCFCE7; color: #15803D; border-color: #BBF7D0; }
+    .btn-cancel {
+      width: 100%; background: transparent; border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 12px; color: var(--sub);
+      font-size: 14px; cursor: pointer; margin-top: 4px; transition: border-color 0.18s;
+    }
+    .btn-cancel:hover { border-color: var(--blue); }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%);
+      background: #111827; color: #fff;
+      padding: 10px 20px; border-radius: 99px;
+      font-size: 14px; font-weight: 500;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s; z-index: 999; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<!-- ══════ THEME SPLASH ══════ -->
+<div id="theme-splash">
+  <div class="splash-logo">📺</div>
+  <div class="splash-title">Телевизор 34</div>
+  <div class="splash-sub">Добро пожаловать!</div>
+  <div class="splash-question">Выберите тему оформления</div>
+  <div class="theme-cards">
+    <div class="theme-card light-card" id="tc-light" onclick="selectTheme('light')">
+      <div class="tc-preview">☀️</div>
+      <div class="tc-label">Светлая</div>
+      <div class="tc-check">✓</div>
+    </div>
+    <div class="theme-card dark-card" id="tc-dark" onclick="selectTheme('dark')">
+      <div class="tc-preview">🌙</div>
+      <div class="tc-label">Тёмная</div>
+      <div class="tc-check">✓</div>
+    </div>
+  </div>
+  <button class="btn-splash-continue" id="splashContinue" onclick="confirmTheme()">Продолжить →</button>
+</div>
+
+<div class="phone-wrap">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+      </svg>
+      Телевизор 34
+    </div>
+    <div class="top-avatar" id="topAvatar" onclick="switchTab('profile')">Г</div>
+  </div>
+
+  <!-- HOME SCREEN -->
+  <div class="screen active" id="screen-home">
+    <div class="hero">
+      <div class="hero-top">
+        <div class="hero-user">
+          <div class="hero-avatar" id="heroAvatarLetter">Г</div>
+          <div>
+            <div class="hero-greeting" id="heroGreeting">Добрый день,</div>
+            <div class="hero-name" id="heroName">Гость</div>
+          </div>
+        </div>
+        <div class="hero-badge">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          <span id="heroBadgeText">Общий</span>
+        </div>
+      </div>
+      <div class="hero-status">
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:6px;opacity:.85"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+          Подключение активно
+        </span>
+        <span class="dot-green"></span>
+      </div>
+    </div>
+
+    <div class="section-label">Управление</div>
+    <div class="card">
+      <div class="list-row">
+        <div class="row-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1A56DB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-stroke">
+            <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1.5" fill="currentColor"/><circle cx="3" cy="12" r="1.5" fill="currentColor"/><circle cx="3" cy="18" r="1.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="row-text">
+          <div class="row-label">Активный плейлист</div>
+          <div class="row-value" id="activePlaylistRow">Общий</div>
+        </div>
+        <span class="dot-green"></span>
+      </div>
+    </div>
+
+    <button class="btn-playlist" onclick="openPlaylist()">
+      <span class="left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><polyline points="3 9 4 10 6 7"/><polyline points="3 15 4 16 6 13"/></svg>
+        Плейлисты
+      </span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+
+    <div class="section-label">Информация об аккаунте</div>
+    <div class="card">
+      <div class="list-row">
+        <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+        <div class="row-text"><div class="row-label">Регион</div><div class="row-value">Волгоградская область</div></div>
+      </div>
+      <div class="list-row">
+        <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="4" height="11" rx="1"/><rect x="9" y="5" width="4" height="15" rx="1"/><rect x="16" y="2" width="4" height="18" rx="1"/></svg></div>
+        <div class="row-text"><div class="row-label">Тип подключения</div><div class="row-value">IPTV</div></div>
+      </div>
+      <div class="list-row">
+        <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <div class="row-text"><div class="row-label">Пакет</div><div class="row-value">Базовый</div></div>
+      </div>
+      <div class="list-row">
+        <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="row-text"><div class="row-label">Дата обновления</div><div class="row-value">21.06.2026</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE SCREEN -->
+  <div class="screen" id="screen-profile">
+    <div class="section-label" style="font-size:17px;">Мой профиль</div>
+
+    <div class="profile-hero">
+      <div class="profile-avatar-big" id="profileAvatarBig">Г</div>
+      <div class="profile-name-big" id="profileNameBig">Гость</div>
+      <div class="profile-sub">Абонент Телевизор 34</div>
+      <button class="change-avatar-btn" onclick="toggleAvatarPicker()">✏️ Сменить аватар</button>
+    </div>
+
+    <div class="avatar-picker-card" id="avatarPicker" style="display:none;">
+      <div class="avatar-picker-title">Выберите аватар</div>
+      <div class="avatar-grid" id="avatarGrid"></div>
+    </div>
+
+    <!-- Theme switcher -->
+    <div class="section-label">Оформление</div>
+    <div class="theme-row">
+      <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></div>
+      <div class="row-text"><div class="row-label">Тема</div><div class="row-value" id="themeLabel">Светлая</div></div>
+      <div class="theme-toggle-wrap">
+        <button class="theme-pill active" id="pill-light" onclick="applyTheme('light')">☀️ Светлая</button>
+        <button class="theme-pill" id="pill-dark" onclick="applyTheme('dark')">🌙 Тёмная</button>
+      </div>
+    </div>
+
+    <div class="name-card">
+      <div class="name-card-title">Ваше имя</div>
+      <div class="name-card-sub">Это имя будет отображаться в приветствии</div>
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <input type="text" id="nameInput" placeholder="Введите ваше имя" maxlength="40" oninput="checkName()" onkeydown="if(event.key==='Enter') saveName()"/>
+      </div>
+      <button class="btn-save" id="saveBtn" onclick="saveName()" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Сохранить
+      </button>
+    </div>
+
+    <div class="section-label">Детали аккаунта</div>
+    <div class="card">
+      <div class="list-row">
+        <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8a2 2 0 00-2 2v2h12V5a2 2 0 00-2-2z"/></svg></div>
+        <div class="row-text"><div class="row-label">Абонент</div><div class="row-value">Телевизор 34</div></div>
+      </div>
+      <div class="list-row">
+        <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="row-text"><div class="row-label">Город</div><div class="row-value">Волгоград</div></div>
+      </div>
+      <div class="list-row">
+        <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <div class="row-text"><div class="row-label">Статус подписки</div><div class="row-value">Активна</div></div>
+        <span class="row-badge badge-green">Активна</span>
+      </div>
+      <div class="list-row">
+        <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="row-text"><div class="row-label">Безопасность</div><div class="row-value">Без пароля</div></div>
+        <span class="row-badge badge-gray">Без пароля</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="nav-tab active" id="nav-home" onclick="switchTab('home')">
+      <div class="nav-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <span>Главная</span>
+    </button>
+    <button class="nav-tab" id="nav-profile" onclick="switchTab('profile')">
+      <div class="nav-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <span>Профиль</span>
+    </button>
+  </div>
+</div>
+
+<!-- PLAYLIST MODAL -->
+<div id="overlay" onclick="closePlaylist()">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Плейлисты</div>
+    <div class="modal-sub">Какой плейлист вы хотите выбрать?</div>
+    <div class="pl-row">
+      <button class="pl-btn active" id="pl-obshiy" onclick="selectPlaylist('Общий','pl-obshiy')">
+        <span class="pl-icon">🌐</span><span>Общий</span><span class="pl-check">✓</span>
+      </button>
+      <button class="btn-copy" id="copy-obshiy" onclick="copyLink('Общий','copy-obshiy')" title="Скопировать ссылку">📋</button>
+    </div>
+    <div class="pl-row">
+      <button class="pl-btn" id="pl-detskiy" onclick="selectPlaylist('Детский','pl-detskiy')">
+        <span class="pl-icon">🧸</span><span>Детский</span><span class="pl-check">✓</span>
+      </button>
+      <button class="btn-copy" id="copy-detskiy" onclick="copyLink('Детский','copy-detskiy')" title="Скопировать ссылку">📋</button>
+    </div>
+    <button class="btn-cancel" onclick="closePlaylist()">Закрыть</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let currentUser = 'Гость';
+  let currentPlaylist = 'Общий';
+  let currentAvatar = null;
+  let currentTheme = null; // set on splash
+
+  const AVATARS = [
+    { id: 0,  emoji: '🦁', bg: '#FFF3CD' }, { id: 1,  emoji: '🐯', bg: '#FFE5CC' },
+    { id: 2,  emoji: '🦊', bg: '#FDEBD0' }, { id: 3,  emoji: '🐺', bg: '#E8EAF6' },
+    { id: 4,  emoji: '🐻', bg: '#F3E5D8' }, { id: 5,  emoji: '🐼', bg: '#F0F0F0' },
+    { id: 6,  emoji: '🐨', bg: '#E0F0EA' }, { id: 7,  emoji: '🦝', bg: '#EDE7F6' },
+    { id: 8,  emoji: '🐸', bg: '#E8F5E9' }, { id: 9,  emoji: '🐧', bg: '#E3F2FD' },
+    { id: 10, emoji: '🦄', bg: '#FCE4EC' }, { id: 11, emoji: '🐉', bg: '#E8F5E9' },
+    { id: 12, emoji: '🚀', bg: '#E3F2FD' }, { id: 13, emoji: '⚡', bg: '#FFF9C4' },
+    { id: 14, emoji: '🎮', bg: '#EDE7F6' }, { id: 15, emoji: '🎬', bg: '#FFEBEE' },
+    { id: 16, emoji: '🎸', bg: '#FFF3E0' }, { id: 17, emoji: '🏆', bg: '#FFF8E1' },
+    { id: 18, emoji: '🌊', bg: '#E0F7FA' }, { id: 19, emoji: '🌈', bg: '#F3E5F5' },
+  ];
+
+  const PLAYLIST_URLS = {
+    'Общий':   'https://televizor34.onrender.com/playlist.m3u',
+    'Детский': 'https://televizor34.onrender.com/kids_playlist.m3u',
+  };
+
+  /* ── SPLASH THEME PICKER ── */
+  function selectTheme(theme) {
+    currentTheme = theme;
+    document.getElementById('tc-light').classList.toggle('selected', theme === 'light');
+    document.getElementById('tc-dark').classList.toggle('selected', theme  === 'dark');
+    document.getElementById('splashContinue').classList.add('ready');
+  }
+
+  function confirmTheme() {
+    if (!currentTheme) return;
+    applyTheme(currentTheme);
+    const splash = document.getElementById('theme-splash');
+    splash.style.opacity = '0';
+    splash.style.transition = 'opacity 0.35s';
+    setTimeout(() => splash.style.display = 'none', 360);
+  }
+
+  /* ── THEME APPLY ── */
+  function applyTheme(theme) {
+    currentTheme = theme;
+    document.body.classList.toggle('dark', theme === 'dark');
+    // Update profile pills
+    document.getElementById('pill-light').classList.toggle('active', theme === 'light');
+    document.getElementById('pill-dark').classList.toggle('active',  theme === 'dark');
+    document.getElementById('themeLabel').textContent = theme === 'dark' ? 'Тёмная' : 'Светлая';
+  }
+
+  /* ── AVATAR ── */
+  function buildAvatarGrid() {
+    const grid = document.getElementById('avatarGrid');
+    grid.innerHTML = '';
+    AVATARS.forEach(av => {
+      const el = document.createElement('div');
+      el.className = 'av-item' + (currentAvatar === av.id ? ' selected' : '');
+      el.style.background = av.bg;
+      el.textContent = av.emoji;
+      el.onclick = () => pickAvatar(av.id);
+      grid.appendChild(el);
+    });
+  }
+  function pickAvatar(id) { currentAvatar = id; buildAvatarGrid(); updateUI(); }
+  function toggleAvatarPicker() {
+    const p = document.getElementById('avatarPicker');
+    const open = p.style.display !== 'none';
+    p.style.display = open ? 'none' : 'block';
+    if (!open) buildAvatarGrid();
+  }
+
+  /* ── UI UPDATE ── */
+  function getInitial(name) { return name.charAt(0).toUpperCase(); }
+  function getGreeting() {
+    const h = new Date().getHours();
+    if (h < 6) return 'Доброй ночи,'; if (h < 12) return 'Доброе утро,';
+    if (h < 18) return 'Добрый день,'; return 'Добрый вечер,';
+  }
+
+  function updateUI() {
+    const av = currentAvatar !== null ? AVATARS[currentAvatar] : null;
+    const init = getInitial(currentUser);
+
+    const topAv = document.getElementById('topAvatar');
+    if (av) { topAv.textContent = av.emoji; topAv.style.background = av.bg; topAv.style.fontSize = '18px'; }
+    else    { topAv.textContent = init; topAv.style.background = ''; topAv.style.fontSize = ''; }
+
+    const heroAv = document.getElementById('heroAvatarLetter');
+    if (av) { heroAv.textContent = av.emoji; heroAv.style.background = av.bg; heroAv.style.fontSize = '22px'; }
+    else    { heroAv.textContent = init; heroAv.style.background = 'rgba(255,255,255,0.22)'; heroAv.style.fontSize = ''; }
+
+    document.getElementById('heroGreeting').textContent = getGreeting();
+    document.getElementById('heroName').textContent = currentUser;
+    document.getElementById('heroBadgeText').textContent = currentPlaylist;
+    document.getElementById('activePlaylistRow').textContent = currentPlaylist;
+
+    const profAv = document.getElementById('profileAvatarBig');
+    if (av) { profAv.textContent = av.emoji; profAv.style.background = av.bg; profAv.style.fontSize = '36px'; }
+    else    { profAv.textContent = init; profAv.style.background = ''; profAv.style.fontSize = ''; }
+
+    document.getElementById('profileNameBig').textContent = currentUser;
+  }
+
+  function checkName() {
+    document.getElementById('saveBtn').disabled = !document.getElementById('nameInput').value.trim();
+  }
+  function saveName() {
+    const val = document.getElementById('nameInput').value.trim();
+    if (!val) return;
+    currentUser = val; updateUI();
+    const btn = document.getElementById('saveBtn');
+    btn.textContent = '✓ Сохранено'; btn.style.background = '#15803D';
+    setTimeout(() => {
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Сохранить`;
+      btn.style.background = '';
+    }, 1600);
+  }
+
+  function switchTab(tab) {
+    ['home','profile'].forEach(t => {
+      document.getElementById('screen-'+t).classList.toggle('active', t===tab);
+      document.getElementById('nav-'+t).classList.toggle('active', t===tab);
+    });
+  }
+
+  function openPlaylist() { document.getElementById('overlay').classList.add('open'); }
+  function closePlaylist() { document.getElementById('overlay').classList.remove('open'); }
+
+  function selectPlaylist(name, btnId) {
+    currentPlaylist = name;
+    document.querySelectorAll('.pl-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(btnId).classList.add('active');
+    updateUI();
+    setTimeout(() => { closePlaylist(); window.open(PLAYLIST_URLS[name], '_blank'); }, 280);
+  }
+
+  function copyLink(name, btnId) {
+    const url = PLAYLIST_URLS[name];
+    const done = (b) => { b.textContent='✓'; b.classList.add('copied'); showToast('Ссылка скопирована!'); setTimeout(()=>{b.textContent='📋';b.classList.remove('copied');},2000); };
+    navigator.clipboard.writeText(url).then(() => done(document.getElementById(btnId))).catch(() => {
+      const ta = document.createElement('textarea'); ta.value=url; ta.style.cssText='position:fixed;opacity:0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      done(document.getElementById(btnId));
+    });
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg;
+    t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  updateUI();
+</script>
+</body>
+</html>
