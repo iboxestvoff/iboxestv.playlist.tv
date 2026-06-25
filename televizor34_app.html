@@ -630,10 +630,25 @@
 <div class="toast" id="toast"></div>
 
 <script>
+  /* ── LOCALSTORAGE ── */
+  function saveData() {
+    localStorage.setItem('tv34_user',     currentUser);
+    localStorage.setItem('tv34_playlist', currentPlaylist);
+    localStorage.setItem('tv34_avatar',   currentAvatar === null ? '' : String(currentAvatar));
+    localStorage.setItem('tv34_theme',    currentTheme || 'light');
+  }
+  function loadData() {
+    currentUser     = localStorage.getItem('tv34_user')     || 'Гость';
+    currentPlaylist = localStorage.getItem('tv34_playlist') || 'Общий';
+    const av        = localStorage.getItem('tv34_avatar');
+    currentAvatar   = (av !== null && av !== '') ? parseInt(av) : null;
+    currentTheme    = localStorage.getItem('tv34_theme')    || null;
+  }
+
   let currentUser = 'Гость';
   let currentPlaylist = 'Общий';
   let currentAvatar = null;
-  let currentTheme = null; // set on splash
+  let currentTheme = null;
 
   const AVATARS = [
     { id: 0,  emoji: '🦁', bg: '#FFF3CD' }, { id: 1,  emoji: '🐯', bg: '#FFE5CC' },
@@ -678,6 +693,7 @@
     document.getElementById('pill-light').classList.toggle('active', theme === 'light');
     document.getElementById('pill-dark').classList.toggle('active',  theme === 'dark');
     document.getElementById('themeLabel').textContent = theme === 'dark' ? 'Тёмная' : 'Светлая';
+    saveData();
   }
 
   /* ── AVATAR ── */
@@ -693,7 +709,7 @@
       grid.appendChild(el);
     });
   }
-  function pickAvatar(id) { currentAvatar = id; buildAvatarGrid(); updateUI(); }
+  function pickAvatar(id) { currentAvatar = id; buildAvatarGrid(); updateUI(); saveData(); }
   function toggleAvatarPicker() {
     const p = document.getElementById('avatarPicker');
     const open = p.style.display !== 'none';
@@ -739,7 +755,7 @@
   function saveName() {
     const val = document.getElementById('nameInput').value.trim();
     if (!val) return;
-    currentUser = val; updateUI();
+    currentUser = val; updateUI(); saveData();
     const btn = document.getElementById('saveBtn');
     btn.textContent = '✓ Сохранено'; btn.style.background = '#15803D';
     setTimeout(() => {
@@ -762,7 +778,7 @@
     currentPlaylist = name;
     document.querySelectorAll('.pl-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(btnId).classList.add('active');
-    updateUI();
+    updateUI(); saveData();
     setTimeout(() => { closePlaylist(); window.open(PLAYLIST_URLS[name], '_blank'); }, 280);
   }
 
@@ -779,6 +795,19 @@
   function showToast(msg) {
     const t = document.getElementById('toast'); t.textContent = msg;
     t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // ── STARTUP ──
+  loadData();
+
+  if (currentTheme) {
+    // Returning user — skip splash, apply saved theme
+    document.getElementById('theme-splash').style.display = 'none';
+    applyTheme(currentTheme);
+    if (currentPlaylist === 'Детский') {
+      document.getElementById('pl-obshiy').classList.remove('active');
+      document.getElementById('pl-detskiy').classList.add('active');
+    }
   }
 
   updateUI();
