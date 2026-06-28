@@ -321,6 +321,55 @@
   }
   .error-actions button:hover{border-color:var(--accent); color:var(--accent);}
 
+  /* ---------- Custom player controls ---------- */
+  .custom-controls{
+    position:absolute;
+    left:0; right:0; bottom:0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 14px;
+    background:linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 55%, rgba(0,0,0,0.85) 100%);
+    z-index:4;
+  }
+  .cc-btn{
+    background:transparent;
+    border:none;
+    color:var(--text);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:34px;
+    height:34px;
+    border-radius:8px;
+    flex-shrink:0;
+  }
+  .cc-btn:hover{background:rgba(255,255,255,0.14);}
+  .cc-btn svg{width:20px; height:20px; fill:currentColor;}
+  .cc-live{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-family:'Space Mono',monospace;
+    font-size:12px;
+    color:var(--live);
+    letter-spacing:1px;
+    flex-shrink:0;
+  }
+  .cc-live-dot{
+    width:7px; height:7px;
+    border-radius:50%;
+    background:var(--live);
+    animation:recPulse 1.4s infinite;
+  }
+  .cc-spacer{flex:1;}
+  .cc-volume{
+    width:70px;
+    accent-color:var(--accent);
+    flex-shrink:0;
+  }
+
   /* ---------- Mobile stacked panel (video on top, tabs + list below) ---------- */
   .mobile-panel{display:none;}
   .mobile-tabs{
@@ -491,23 +540,20 @@
 
   /* ---------- Recording ---------- */
   .record-controls{
-    position:absolute;
-    top:18px;
-    right:18px;
     display:flex;
     align-items:center;
     gap:8px;
-    z-index:5;
+    flex-shrink:0;
   }
   .record-btn{
     display:flex;
     align-items:center;
     gap:6px;
-    background:rgba(10,10,14,0.78);
+    background:var(--panel-2);
     border:1px solid var(--line);
     color:var(--text);
     border-radius:999px;
-    padding:6px 12px;
+    padding:8px 14px;
     font-size:13px;
     cursor:pointer;
   }
@@ -530,7 +576,8 @@
     font-family:'Space Mono',monospace;
     font-size:12px;
     color:var(--live);
-    background:rgba(10,10,14,0.78);
+    background:var(--panel-2);
+    border:1px solid var(--line);
     padding:4px 8px;
     border-radius:6px;
   }
@@ -598,6 +645,13 @@
       <div class="search-wrap">
         <input id="searchInput" type="search" placeholder="Поиск канала…" aria-label="Поиск канала" />
       </div>
+      <div id="recordControls" class="record-controls">
+        <button id="recordBtn" class="record-btn" type="button" title="Записать эфир">
+          <span class="record-dot"></span>
+          <span id="recordLabel">Запись</span>
+        </button>
+        <span id="recordTimer" class="record-timer hidden">00:00</span>
+      </div>
     </div>
   </header>
 
@@ -616,20 +670,12 @@
 
     <main class="screen-wrap">
       <div class="screen">
-        <video id="video" class="hidden" playsinline controls crossorigin="anonymous"></video>
+        <video id="video" class="hidden" playsinline crossorigin="anonymous"></video>
         <audio id="audioEl" class="hidden" crossorigin="anonymous"></audio>
 
         <div id="audioFace" class="audio-face hidden">
           <div class="bars"><span></span><span></span><span></span><span></span><span></span></div>
           <div class="audio-label">РАДИО — ИДЁТ ЭФИР</div>
-        </div>
-
-        <div id="recordControls" class="record-controls">
-          <button id="recordBtn" class="record-btn" type="button" title="Записать эфир">
-            <span class="record-dot"></span>
-            <span id="recordLabel">Запись</span>
-          </button>
-          <span id="recordTimer" class="record-timer hidden">00:00</span>
         </div>
 
         <div id="toast" class="toast hidden"></div>
@@ -654,6 +700,24 @@
             <button id="retryBtn">Повторить</button>
             <button id="nextBtn">Следующий канал</button>
           </div>
+        </div>
+
+        <div id="customControls" class="custom-controls hidden">
+          <button id="playPauseBtn" class="cc-btn" type="button" aria-label="Воспроизвести/Пауза">
+            <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <svg id="pauseIcon" viewBox="0 0 24 24" class="hidden"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          </button>
+          <span class="cc-live"><span class="cc-live-dot"></span>LIVE</span>
+          <div class="cc-spacer"></div>
+          <button id="muteBtn" class="cc-btn" type="button" aria-label="Звук">
+            <svg id="volumeIcon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.26 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+            <svg id="muteIcon" viewBox="0 0 24 24" class="hidden"><path d="M3.63 3.63L2.22 5.05 7.17 10H3v4h4l5 5v-6.17l4.18 4.18c-.65.49-1.38.88-2.18 1.11v2.06a8.99 8.99 0 0 0 3.62-1.85l1.95 1.95 1.41-1.41L3.63 3.63zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+          </button>
+          <input id="volumeSlider" type="range" min="0" max="1" step="0.05" value="1" class="cc-volume" aria-label="Громкость" />
+          <button id="fullscreenBtn" class="cc-btn" type="button" aria-label="Полный экран">
+            <svg id="fsEnterIcon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+            <svg id="fsExitIcon" viewBox="0 0 24 24" class="hidden"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
+          </button>
         </div>
       </div>
     </main>
@@ -722,6 +786,18 @@
     recordLabel: document.getElementById('recordLabel'),
     recordTimer: document.getElementById('recordTimer'),
     toast: document.getElementById('toast'),
+    customControls: document.getElementById('customControls'),
+    playPauseBtn: document.getElementById('playPauseBtn'),
+    playIcon: document.getElementById('playIcon'),
+    pauseIcon: document.getElementById('pauseIcon'),
+    muteBtn: document.getElementById('muteBtn'),
+    volumeIcon: document.getElementById('volumeIcon'),
+    muteIcon: document.getElementById('muteIcon'),
+    volumeSlider: document.getElementById('volumeSlider'),
+    fullscreenBtn: document.getElementById('fullscreenBtn'),
+    fsEnterIcon: document.getElementById('fsEnterIcon'),
+    fsExitIcon: document.getElementById('fsExitIcon'),
+    screenEl: document.querySelector('.screen'),
   };
 
   let mobileCategoryFilter = null;
@@ -1288,6 +1364,7 @@
     els.loading.classList.add('hidden');
     els.errorDetail.textContent = message;
     els.errorBox.classList.remove('hidden');
+    els.customControls.classList.add('hidden');
   }
 
   function stopAll(){
@@ -1297,6 +1374,60 @@
     els.audioEl.pause();
     els.audioEl.removeAttribute('src');
   }
+
+  function activeMediaEl(){
+    return els.audioFace.classList.contains('hidden') ? els.video : els.audioEl;
+  }
+
+  function syncCustomControls(){
+    const el = activeMediaEl();
+    const playing = !el.paused && !el.ended;
+    els.playIcon.classList.toggle('hidden', playing);
+    els.pauseIcon.classList.toggle('hidden', !playing);
+    const muted = el.muted || el.volume === 0;
+    els.volumeIcon.classList.toggle('hidden', muted);
+    els.muteIcon.classList.toggle('hidden', !muted);
+    els.volumeSlider.value = muted ? 0 : el.volume;
+  }
+
+  els.playPauseBtn.addEventListener('click', () => {
+    const el = activeMediaEl();
+    if(el.paused){ el.play().catch(() => {}); } else { el.pause(); }
+  });
+
+  els.muteBtn.addEventListener('click', () => {
+    const el = activeMediaEl();
+    el.muted = !el.muted;
+    syncCustomControls();
+  });
+
+  els.volumeSlider.addEventListener('input', () => {
+    const el = activeMediaEl();
+    const v = parseFloat(els.volumeSlider.value);
+    el.volume = v;
+    el.muted = v === 0;
+    syncCustomControls();
+  });
+
+  els.fullscreenBtn.addEventListener('click', () => {
+    if(document.fullscreenElement){
+      document.exitFullscreen();
+    } else if(els.screenEl.requestFullscreen){
+      els.screenEl.requestFullscreen();
+    }
+  });
+
+  document.addEventListener('fullscreenchange', () => {
+    const isFs = !!document.fullscreenElement;
+    els.fsEnterIcon.classList.toggle('hidden', isFs);
+    els.fsExitIcon.classList.toggle('hidden', !isFs);
+  });
+
+  [els.video, els.audioEl].forEach(el => {
+    el.addEventListener('play', syncCustomControls);
+    el.addEventListener('pause', syncCustomControls);
+    el.addEventListener('volumechange', syncCustomControls);
+  });
 
   function playChannel(index){
     const ch = channels[index];
@@ -1311,6 +1442,7 @@
     renderEpgPanels();
     els.placeholder.classList.add('hidden');
     els.errorBox.classList.add('hidden');
+    els.customControls.classList.remove('hidden');
     stopAll();
 
     if(isAudioUrl(ch.url)){
@@ -1319,11 +1451,13 @@
       els.audioEl.classList.remove('hidden');
       els.audioEl.src = ch.url;
       els.audioEl.play().catch(err => showError('Радиопоток не воспроизводится: ' + err.message));
+      syncCustomControls();
     } else {
       els.audioFace.classList.add('hidden');
       els.audioEl.classList.add('hidden');
       els.video.classList.remove('hidden');
       playVideo(ch.url);
+      syncCustomControls();
     }
   }
 
