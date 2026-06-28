@@ -211,6 +211,12 @@
     background:#000;
     object-fit:contain;
   }
+  #embedFrame{
+    width:100%;
+    height:100%;
+    background:#000;
+    border:none;
+  }
   .audio-face{
     display:flex;
     flex-direction:column;
@@ -672,6 +678,7 @@
       <div class="screen">
         <video id="video" class="hidden" playsinline crossorigin="anonymous"></video>
         <audio id="audioEl" class="hidden" crossorigin="anonymous"></audio>
+        <iframe id="embedFrame" class="hidden" allow="autoplay; fullscreen; encrypted-media" allowfullscreen frameborder="0"></iframe>
 
         <div id="audioFace" class="audio-face hidden">
           <div class="bars"><span></span><span></span><span></span><span></span><span></span></div>
@@ -798,6 +805,7 @@
     fsEnterIcon: document.getElementById('fsEnterIcon'),
     fsExitIcon: document.getElementById('fsExitIcon'),
     screenEl: document.querySelector('.screen'),
+    embedFrame: document.getElementById('embedFrame'),
   };
 
   let mobileCategoryFilter = null;
@@ -812,6 +820,7 @@
   let channels = [];
   let hls = null;
   let currentIndex = -1;
+  let isEmbedActive = false;
   let osdTimer = null;
 
   function escapeHtml(s){
@@ -933,11 +942,10 @@
     els.epgPanelMobile.innerHTML = html;
   }
 
-  async function readEpgResponseText(res, onProgress){
+  async function readEpgResponseBytes(res, onProgress){
     const totalHeader = res.headers.get('content-length');
     const total = totalHeader ? parseInt(totalHeader, 10) : 0;
 
-    let bytes;
     if(res.body && typeof res.body.getReader === 'function'){
       const reader = res.body.getReader();
       const chunks = [];
@@ -949,39 +957,192 @@
         received += value.length;
         if(onProgress) onProgress(received, total);
       }
-      bytes = new Uint8Array(received);
+      const bytes = new Uint8Array(received);
       let offset = 0;
       for(const chunk of chunks){
         bytes.set(chunk, offset);
         offset += chunk.length;
       }
-    } else {
-      bytes = new Uint8Array(await res.arrayBuffer());
-      if(onProgress) onProgress(bytes.length, bytes.length);
+      return bytes;
     }
-
-    const isGzip = bytes.length > 2 && bytes[0] === 0x1f && bytes[1] === 0x8b;
-    if(isGzip){
-      if(typeof DecompressionStream === 'undefined'){
-        throw new Error('файл сжат gzip, а браузер не поддерживает его распаковку (DecompressionStream)');
-      }
-      const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
-      const decompressedBuf = await new Response(stream).arrayBuffer();
-      return new TextDecoder('utf-8').decode(decompressedBuf);
-    }
-    return new TextDecoder('utf-8').decode(bytes);
+    const bytes = new Uint8Array(await res.arrayBuffer());
+    if(onProgress) onProgress(bytes.length, bytes.length);
+    return bytes;
   }
 
-  function sanitizeXmlText(text){
-    return text
-      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '')
-      .replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g, '&amp;');
+  // Heavy XML decompression + parsing happens off the main thread so the page never freezes.
+  const EPG_WORKER_SRC = [
+    'function decodeXmlEntities(s){',
+    '  return s.replace(/&(amp|lt|gt|quot|apos|#x[0-9a-fA-F]+|#\\d+);/g, function(m, g){',
+    '    if(g === "amp") return "&";',
+    '    if(g === "lt") return "<";',
+    '    if(g === "gt") return ">";',
+    '    if(g === "quot") return \'"\';',
+    "    if(g === 'apos') return \"'\";",
+    '    if(g[0] === "#"){',
+    '      var code = g[1] === "x" ? parseInt(g.slice(2), 16) : parseInt(g.slice(1), 10);',
+    '      return isNaN(code) ? m : String.fromCodePoint(code);',
+    '    }',
+    '    return m;',
+    '  });',
+    '}',
+    'function getAttr(str, name){',
+    '  var m = str.match(new RegExp(name + "=\\"([^\\"]*)\\""));',
+    '  return m ? m[1] : null;',
+    '}',
+    'function parseXmltvTime(s){',
+    '  if(!s) return null;',
+    '  var m = s.match(/^(\\d{4})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})\\s*([+-]\\d{2})?(\\d{2})?/);',
+    '  if(!m) return null;',
+    '  var Y=+m[1],Mo=+m[2],D=+m[3],H=+m[4],Mi=+m[5],S=+m[6],offH=m[7],offM=m[8];',
+    '  var ms = Date.UTC(Y, Mo-1, D, H, Mi, S);',
+    '  if(offH){',
+    '    var sign = offH[0] === "-" ? -1 : 1;',
+    '    var offsetMinutes = sign * (parseInt(offH.slice(1),10)*60 + (offM?parseInt(offM,10):0));',
+    '    ms -= offsetMinutes*60000;',
+    '  }',
+    '  return new Date(ms);',
+    '}',
+    'function normalizeName(s){',
+    '  return (s||"").toLowerCase().replace(/[^a-zа-яё0-9]/gi,"");',
+    '}',
+    'async function decompressIfGzip(bytes){',
+    '  var isGzip = bytes.length > 2 && bytes[0] === 0x1f && bytes[1] === 0x8b;',
+    '  if(!isGzip) return new TextDecoder("utf-8").decode(bytes);',
+    '  var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));',
+    '  var buf = await new Response(stream).arrayBuffer();',
+    '  return new TextDecoder("utf-8").decode(buf);',
+    '}',
+    'self.onmessage = async function(e){',
+    '  try{',
+    '    var bytes = e.data.bytes;',
+    '    var text = await decompressIfGzip(bytes);',
+    '    var idByNormalizedName = new Map();',
+    '    var channelRe = /<channel\\s+id="([^"]*)"[^>]*>([\\s\\S]*?)<\\/channel>/g;',
+    '    var dnRe = /<display-name[^>]*>([\\s\\S]*?)<\\/display-name>/g;',
+    '    var cm;',
+    '    while((cm = channelRe.exec(text))){',
+    '      var id = cm[1];',
+    '      var inner = cm[2];',
+    '      var dm;',
+    '      dnRe.lastIndex = 0;',
+    '      while((dm = dnRe.exec(inner))){',
+    '        var norm = normalizeName(decodeXmlEntities(dm[1]));',
+    '        if(norm && !idByNormalizedName.has(norm)) idByNormalizedName.set(norm, id);',
+    '      }',
+    '    }',
+    '    var programsByChannelId = new Map();',
+    '    var progRe = /<programme\\s+([^>]*)>([\\s\\S]*?)<\\/programme>/g;',
+    '    var titleRe = /<title[^>]*>([\\s\\S]*?)<\\/title>/;',
+    '    var pm;',
+    '    while((pm = progRe.exec(text))){',
+    '      var attrs = pm[1];',
+    '      var inner2 = pm[2];',
+    '      var chId = getAttr(attrs, "channel");',
+    '      var start = parseXmltvTime(getAttr(attrs, "start"));',
+    '      var stop = parseXmltvTime(getAttr(attrs, "stop"));',
+    '      if(!chId || !start || !stop) continue;',
+    '      var tm = titleRe.exec(inner2);',
+    '      var title = tm ? decodeXmlEntities(tm[1]).trim() : "Без названия";',
+    '      if(!programsByChannelId.has(chId)) programsByChannelId.set(chId, []);',
+    '      programsByChannelId.get(chId).push({ start: start, stop: stop, title: title });',
+    '    }',
+    '    programsByChannelId.forEach(function(list){ list.sort(function(a,b){ return a.start - b.start; }); });',
+    '    if(programsByChannelId.size === 0){',
+    '      throw new Error("в файле не нашлось ни одной передачи (<programme>)");',
+    '    }',
+    '    self.postMessage({ ok: true, idByNormalizedName: idByNormalizedName, programsByChannelId: programsByChannelId });',
+    '  }catch(err){',
+    '    self.postMessage({ ok: false, error: (err && err.message) || String(err) });',
+    '  }',
+    '};'
+  ].join('\n');
+
+  let epgWorker = null;
+  function getEpgWorker(){
+    if(!epgWorker){
+      const blob = new Blob([EPG_WORKER_SRC], { type: 'application/javascript' });
+      epgWorker = new Worker(URL.createObjectURL(blob));
+    }
+    return epgWorker;
+  }
+
+  function parseEpgInWorker(bytes){
+    return new Promise((resolve, reject) => {
+      const worker = getEpgWorker();
+      function onMessage(e){
+        worker.removeEventListener('message', onMessage);
+        worker.removeEventListener('error', onError);
+        if(e.data.ok) resolve({ idByNormalizedName: e.data.idByNormalizedName, programsByChannelId: e.data.programsByChannelId });
+        else reject(new Error(e.data.error));
+      }
+      function onError(err){
+        worker.removeEventListener('message', onMessage);
+        worker.removeEventListener('error', onError);
+        reject(new Error(err.message || 'ошибка воркера разбора телепрограммы'));
+      }
+      worker.addEventListener('message', onMessage);
+      worker.addEventListener('error', onError);
+      worker.postMessage({ bytes }, [bytes.buffer]);
+    });
+  }
+
+  // IndexedDB cache so a page reload doesn't re-download/re-parse the same EPG.
+  // (Note: persistent storage like IndexedDB may be sandboxed away inside the
+  // Claude.ai preview iframe — it works normally once the file is hosted for real.)
+  const EPG_DB_NAME = 'televizor34-epg';
+  const EPG_STORE = 'cache';
+  const EPG_CACHE_KEY = 'epg-v1';
+  const EPG_MAX_AGE_MS = 20 * 60 * 60 * 1000;
+
+  function openEpgDb(){
+    return new Promise((resolve, reject) => {
+      if(typeof indexedDB === 'undefined'){ reject(new Error('IndexedDB недоступен')); return; }
+      const req = indexedDB.open(EPG_DB_NAME, 1);
+      req.onupgradeneeded = () => { req.result.createObjectStore(EPG_STORE); };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function loadEpgFromCache(){
+    try{
+      const db = await openEpgDb();
+      return await new Promise((resolve) => {
+        const tx = db.transaction(EPG_STORE, 'readonly');
+        const req = tx.objectStore(EPG_STORE).get(EPG_CACHE_KEY);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => resolve(null);
+      });
+    }catch(e){ return null; }
+  }
+
+  async function saveEpgToCache(data){
+    try{
+      const db = await openEpgDb();
+      const tx = db.transaction(EPG_STORE, 'readwrite');
+      tx.objectStore(EPG_STORE).put({
+        savedAt: Date.now(),
+        idByNormalizedName: data.idByNormalizedName,
+        programsByChannelId: data.programsByChannelId
+      }, EPG_CACHE_KEY);
+    }catch(e){ /* кэш не критичен — просто пропускаем */ }
   }
 
   async function loadEpg(url){
     if(!url){ setEpgStatus('Укажите ссылку на EPG (XMLTV).', true); return; }
-    setEpgStatus('Загрузка телепрограммы… файл может быть большим (десятки МБ), это может занять время.');
     els.epgLoadBtn.disabled = true;
+
+    const cached = await loadEpgFromCache();
+    if(cached && (Date.now() - cached.savedAt) < EPG_MAX_AGE_MS){
+      epgData = { idByNormalizedName: cached.idByNormalizedName, programsByChannelId: cached.programsByChannelId };
+      buildEpgMatches();
+      renderEpgPanels();
+      els.epgLoadBtn.disabled = false;
+      return;
+    }
+
+    setEpgStatus('Загрузка телепрограммы… файл может быть большим (десятки МБ), это может занять время.');
 
     let res;
     try{
@@ -1001,7 +1162,7 @@
 
     try{
       let lastPct = -1;
-      let text = await readEpgResponseText(res, (received, total) => {
+      const bytes = await readEpgResponseBytes(res, (received, total) => {
         if(total > 0){
           const pct = Math.min(100, Math.round(received / total * 100));
           if(pct !== lastPct){
@@ -1012,43 +1173,13 @@
           setEpgStatus('Загрузка телепрограммы… ' + (received / 1048576).toFixed(1) + ' МБ');
         }
       });
-      setEpgStatus('Распаковка и разбор телепрограммы…');
-      text = sanitizeXmlText(text);
-      const xml = new DOMParser().parseFromString(text, 'application/xml');
-      const parserErrorEl = xml.querySelector('parsererror');
-      if(parserErrorEl){
-        const detail = parserErrorEl.textContent.replace(/\s+/g, ' ').trim().slice(0, 400);
-        throw new Error('получено ' + text.length + ' символов. ' + detail);
-      }
+      setEpgStatus('Распаковка и разбор телепрограммы… (страница не зависнет — это идёт в фоновом потоке)');
 
-      const programsByChannelId = new Map();
-      xml.querySelectorAll('programme').forEach(p => {
-        const chId = p.getAttribute('channel');
-        const start = parseXmltvTime(p.getAttribute('start'));
-        const stop = parseXmltvTime(p.getAttribute('stop'));
-        if(!chId || !start || !stop) return;
-        const titleEl = p.querySelector('title');
-        const title = titleEl ? titleEl.textContent.trim() : 'Без названия';
-        if(!programsByChannelId.has(chId)) programsByChannelId.set(chId, []);
-        programsByChannelId.get(chId).push({ start, stop, title });
-      });
-      programsByChannelId.forEach(list => list.sort((a, b) => a.start - b.start));
-
-      const idByNormalizedName = new Map();
-      xml.querySelectorAll('channel').forEach(c => {
-        const id = c.getAttribute('id');
-        if(!id) return;
-        c.querySelectorAll('display-name').forEach(dn => {
-          const norm = normalizeName(dn.textContent || '');
-          if(norm && !idByNormalizedName.has(norm)) idByNormalizedName.set(norm, id);
-        });
-      });
-
-      if(programsByChannelId.size === 0) throw new Error('в файле не нашлось ни одной передачи (<programme>)');
-
-      epgData = { idByNormalizedName, programsByChannelId };
+      const result = await parseEpgInWorker(bytes);
+      epgData = result;
       buildEpgMatches();
       renderEpgPanels();
+      saveEpgToCache(result);
     }catch(err){
       console.error(err);
       epgData = null;
@@ -1097,6 +1228,7 @@
 
   function startRecording(){
     if(currentIndex < 0){ showToast('Сначала выберите канал.', true); return; }
+    if(isEmbedActive){ showToast('Запись недоступна для встроенных трансляций VK/Rutube — можно записывать только потоки из плейлиста.', true); return; }
     if(!window.MediaRecorder){ showToast('Браузер не поддерживает запись (MediaRecorder).', true); return; }
 
     const isAudio = !els.audioFace.classList.contains('hidden');
@@ -1373,6 +1505,20 @@
     els.video.load();
     els.audioEl.pause();
     els.audioEl.removeAttribute('src');
+    els.embedFrame.src = 'about:blank';
+    els.embedFrame.classList.add('hidden');
+    isEmbedActive = false;
+  }
+
+  function getEmbedInfo(url){
+    if(/(^|\.)vk(video)?\.(com|ru)\/(video_ext\.php|video-)/i.test(url)){
+      return { type: 'vk', embedUrl: url };
+    }
+    const rutubeId = url.match(/rutube\.ru\/(?:play\/embed\/|video\/)([a-z0-9]+)/i);
+    if(rutubeId){
+      return { type: 'rutube', embedUrl: 'https://rutube.ru/play/embed/' + rutubeId[1] + '/' };
+    }
+    return null;
   }
 
   function activeMediaEl(){
@@ -1444,6 +1590,18 @@
     els.errorBox.classList.add('hidden');
     els.customControls.classList.remove('hidden');
     stopAll();
+
+    const embed = getEmbedInfo(ch.url);
+    if(embed){
+      isEmbedActive = true;
+      els.video.classList.add('hidden');
+      els.audioFace.classList.add('hidden');
+      els.audioEl.classList.add('hidden');
+      els.customControls.classList.add('hidden');
+      els.embedFrame.classList.remove('hidden');
+      els.embedFrame.src = embed.embedUrl;
+      return;
+    }
 
     if(isAudioUrl(ch.url)){
       els.video.classList.add('hidden');
