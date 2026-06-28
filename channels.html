@@ -471,6 +471,23 @@
     padding:1px 4px;
     margin-left:6px;
   }
+  .program-progress{
+    height:4px;
+    background:var(--line);
+    border-radius:2px;
+    margin:6px 4px 14px;
+    overflow:hidden;
+  }
+  .program-progress-bar{
+    height:100%;
+    background:var(--accent);
+    border-radius:2px;
+  }
+  .program-row.next-row{
+    opacity:0.75;
+    border-bottom:none;
+  }
+  .program-row.next-row .program-time{color:var(--muted);}
 
   /* ---------- Recording ---------- */
   .record-controls{
@@ -576,9 +593,9 @@
       </select>
       <input id="customUrl" type="url" class="hidden" placeholder="https://.../playlist.m3u" />
       <button id="loadBtn" class="btn">Загрузить</button>
-      <input id="epgUrlInput" type="url" placeholder="Ссылка на EPG (XMLTV)" style="min-width:190px;" />
-      <button id="epgLoadBtn" class="btn">Загрузить программу</button>
-      <button id="epgFileBtn" class="btn" type="button" title="Надёжный способ, не зависит от CORS">Файл с компьютера</button>
+      <input id="epgUrlInput" type="url" class="hidden" placeholder="Ссылка на EPG (XMLTV)" value="https://raw.githubusercontent.com/iboxestvoff/iboxestv.playlist.tv/epg-data/epg.xml" style="min-width:190px;" />
+      <button id="epgLoadBtn" class="btn hidden">Загрузить программу</button>
+      <button id="epgFileBtn" class="btn hidden" type="button" title="Надёжный способ, не зависит от CORS">Файл с компьютера</button>
       <input id="epgFileInput" type="file" accept=".xml,.txt,application/xml,text/xml" class="hidden" />
       <div class="search-wrap">
         <input id="searchInput" type="search" placeholder="Поиск канала…" aria-label="Поиск канала" />
@@ -799,7 +816,7 @@
 
   function renderEpgPanels(){
     if(!epgData){
-      setEpgStatus('Телепрограмма не загружена. Укажите ссылку на EPG (XMLTV) в шапке и нажмите «Загрузить программу».');
+      setEpgStatus('Телепрограмма не загружена.');
       return;
     }
     if(currentIndex < 0){
@@ -814,23 +831,62 @@
     }
     const programs = epgData.programsByChannelId.get(chId) || [];
     const now = new Date();
-    const body = programs.length === 0
-      ? '<div class="rail-status">Нет данных о программе.</div>'
-      : programs.map(p => {
-          const isNow = p.start <= now && now < p.stop;
-          return '<div class="program-row' + (isNow ? ' now' : '') + '">' +
-            '<span class="program-time">' + fmtTime(p.start) + '</span>' +
-            '<span class="program-title">' + escapeHtml(p.title) + (isNow ? ' <span class="now-tag">СЕЙЧАС</span>' : '') + '</span>' +
-            '</div>';
-        }).join('');
+    const idx = programs.findIndex(p => p.start <= now && now < p.stop);
+    const current = idx >= 0 ? programs[idx] : null;
+    const next = idx >= 0 && idx + 1 < programs.length ? programs[idx + 1] : null;
+
+    let body;
+    if(!current){
+      body = '<div class="rail-status">Нет данных о текущей передаче.</div>';
+    } else {
+      const totalMs = current.stop - current.start;
+      const elapsedMs = now - current.start;
+      const pct = totalMs > 0 ? Math.min(100, Math.max(0, Math.round(elapsedMs / totalMs * 100))) : 0;
+      body =
+        '<div class="program-row now">' +
+          '<span class="program-time">' + fmtTime(current.start) + '–' + fmtTime(current.stop) + '</span>' +
+          '<span class="program-title">' + escapeHtml(current.title) + ' <span class="now-tag">СЕЙЧАС</span></span>' +
+        '</div>' +
+        '<div class="program-progress"><div class="program-progress-bar" style="width:' + pct + '%"></div></div>' +
+        (next
+          ? '<div class="program-row next-row">' +
+              '<span class="program-time">' + fmtTime(next.start) + '</span>' +
+              '<span class="program-title">Далее: ' + escapeHtml(next.title) + '</span>' +
+            '</div>'
+          : '');
+    }
     const html = '<div class="epg-channel-title">' + escapeHtml(ch.name) + '</div>' + body;
     els.epgPanelDesktop.innerHTML = html;
     els.epgPanelMobile.innerHTML = html;
   }
 
-  async function readEpgResponseText(res){
-    const buf = await res.arrayBuffer();
-    const bytes = new Uint8Array(buf);
+  async function readEpgResponseText(res, onProgress){
+    const totalHeader = res.headers.get('content-length');
+    const total = totalHeader ? parseInt(totalHeader, 10) : 0;
+
+    let bytes;
+    if(res.body && typeof res.body.getReader === 'function'){
+      const reader = res.body.getReader();
+      const chunks = [];
+      let received = 0;
+      while(true){
+        const { done, value } = await reader.read();
+        if(done) break;
+        chunks.push(value);
+        received += value.length;
+        if(onProgress) onProgress(received, total);
+      }
+      bytes = new Uint8Array(received);
+      let offset = 0;
+      for(const chunk of chunks){
+        bytes.set(chunk, offset);
+        offset += chunk.length;
+      }
+    } else {
+      bytes = new Uint8Array(await res.arrayBuffer());
+      if(onProgress) onProgress(bytes.length, bytes.length);
+    }
+
     const isGzip = bytes.length > 2 && bytes[0] === 0x1f && bytes[1] === 0x8b;
     if(isGzip){
       if(typeof DecompressionStream === 'undefined'){
@@ -871,7 +927,19 @@
     }
 
     try{
-      let text = await readEpgResponseText(res);
+      let lastPct = -1;
+      let text = await readEpgResponseText(res, (received, total) => {
+        if(total > 0){
+          const pct = Math.min(100, Math.round(received / total * 100));
+          if(pct !== lastPct){
+            lastPct = pct;
+            setEpgStatus('Загрузка телепрограммы… ' + pct + '% (' + (received / 1048576).toFixed(1) + ' из ' + (total / 1048576).toFixed(1) + ' МБ)');
+          }
+        } else {
+          setEpgStatus('Загрузка телепрограммы… ' + (received / 1048576).toFixed(1) + ' МБ');
+        }
+      });
+      setEpgStatus('Распаковка и разбор телепрограммы…');
       text = sanitizeXmlText(text);
       const xml = new DOMParser().parseFromString(text, 'application/xml');
       const parserErrorEl = xml.querySelector('parsererror');
@@ -1166,7 +1234,8 @@
     const indices = [];
     channels.forEach((ch, i) => {
       if(mobileCategoryFilter && ch.group !== mobileCategoryFilter) return;
-      if(q && !ch.name.toLowerCase().includes(q)) return;
+      const matches = !q || ch.name.toLowerCase().includes(q) || (ch.number && ch.number.includes(q));
+      if(!matches) return;
       indices.push(i);
     });
     renderMobileChannelList(indices);
@@ -1308,7 +1377,9 @@
       let anyVisible = false;
       details.querySelectorAll('.channel-list > li').forEach(li => {
         const name = li.querySelector('.ch-name').textContent.toLowerCase();
-        const match = name.includes(q);
+        const numEl = li.querySelector('.ch-num');
+        const num = numEl ? numEl.textContent.trim() : '';
+        const match = name.includes(q) || num.includes(q);
         li.style.display = match ? '' : 'none';
         if(match) anyVisible = true;
       });
@@ -1366,6 +1437,7 @@
   });
 
   fetchPlaylist(PLAYLISTS.main);
+  loadEpg(els.epgUrlInput.value.trim());
 </script>
 </body>
 </html>
