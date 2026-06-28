@@ -859,7 +859,11 @@
       let text = await res.text();
       text = sanitizeXmlText(text);
       const xml = new DOMParser().parseFromString(text, 'application/xml');
-      if(xml.querySelector('parsererror')) throw new Error('в XML-файле есть ошибки (повреждённые символы или незакрытые теги) — это проблема самого источника телепрограммы, а не плеера');
+      const parserErrorEl = xml.querySelector('parsererror');
+      if(parserErrorEl){
+        const detail = parserErrorEl.textContent.replace(/\s+/g, ' ').trim().slice(0, 400);
+        throw new Error('получено ' + text.length + ' символов. ' + detail);
+      }
 
       const programsByChannelId = new Map();
       xml.querySelectorAll('programme').forEach(p => {
