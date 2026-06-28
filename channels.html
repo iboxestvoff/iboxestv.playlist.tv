@@ -589,10 +589,8 @@
       <select id="playlistSelect" aria-label="Выбор плейлиста">
         <option value="main">Основной плейлист</option>
         <option value="kids">Детский плейлист</option>
-        <option value="custom">Своя ссылка…</option>
       </select>
-      <input id="customUrl" type="url" class="hidden" placeholder="https://.../playlist.m3u" />
-      <button id="loadBtn" class="btn">Загрузить</button>
+      <button id="loadBtn" class="btn">Обновить</button>
       <input id="epgUrlInput" type="url" class="hidden" placeholder="Ссылка на EPG (XMLTV)" value="https://raw.githubusercontent.com/iboxestvoff/iboxestv.playlist.tv/epg-data/epg.xml" style="min-width:190px;" />
       <button id="epgLoadBtn" class="btn hidden">Загрузить программу</button>
       <button id="epgFileBtn" class="btn hidden" type="button" title="Надёжный способ, не зависит от CORS">Файл с компьютера</button>
@@ -650,7 +648,7 @@
         <div id="loading" class="loading hidden">Подключение…</div>
 
         <div id="errorBox" class="error-box hidden">
-          <div class="error-title">Канал недоступен</div>
+          <div class="error-title">Выбранный канал временно не работает, обратитесь в поддержку</div>
           <div class="error-detail" id="errorDetail"></div>
           <div class="error-actions">
             <button id="retryBtn">Повторить</button>
@@ -686,7 +684,6 @@
 
   const els = {
     playlistSelect: document.getElementById('playlistSelect'),
-    customUrl: document.getElementById('customUrl'),
     loadBtn: document.getElementById('loadBtn'),
     searchInput: document.getElementById('searchInput'),
     status: document.getElementById('status'),
@@ -1361,14 +1358,8 @@
   els.retryBtn.addEventListener('click', () => { if(currentIndex >= 0) playChannel(currentIndex); });
   els.nextBtn.addEventListener('click', () => { if(currentIndex + 1 < channels.length) playChannel(currentIndex + 1); });
 
-  els.playlistSelect.addEventListener('change', () => {
-    els.customUrl.classList.toggle('hidden', els.playlistSelect.value !== 'custom');
-  });
-
   els.loadBtn.addEventListener('click', () => {
-    const val = els.playlistSelect.value;
-    const url = val === 'custom' ? els.customUrl.value.trim() : PLAYLISTS[val];
-    fetchPlaylist(url);
+    fetchPlaylist(PLAYLISTS[els.playlistSelect.value]);
   });
 
   els.searchInput.addEventListener('input', () => {
