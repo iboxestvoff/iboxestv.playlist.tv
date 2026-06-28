@@ -828,6 +828,21 @@
     els.epgPanelMobile.innerHTML = html;
   }
 
+  async function readEpgResponseText(res){
+    const buf = await res.arrayBuffer();
+    const bytes = new Uint8Array(buf);
+    const isGzip = bytes.length > 2 && bytes[0] === 0x1f && bytes[1] === 0x8b;
+    if(isGzip){
+      if(typeof DecompressionStream === 'undefined'){
+        throw new Error('файл сжат gzip, а браузер не поддерживает его распаковку (DecompressionStream)');
+      }
+      const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+      const decompressedBuf = await new Response(stream).arrayBuffer();
+      return new TextDecoder('utf-8').decode(decompressedBuf);
+    }
+    return new TextDecoder('utf-8').decode(bytes);
+  }
+
   function sanitizeXmlText(text){
     return text
       .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '')
@@ -856,7 +871,7 @@
     }
 
     try{
-      let text = await res.text();
+      let text = await readEpgResponseText(res);
       text = sanitizeXmlText(text);
       const xml = new DOMParser().parseFromString(text, 'application/xml');
       const parserErrorEl = xml.querySelector('parsererror');
