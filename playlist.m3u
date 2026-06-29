@@ -21,13 +21,13 @@ https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R02_ROSSIAK_VLGOB/variant.m3u8
 #EXTINF:-1 tvg-logo="http://avatars.mds.yandex.net/get-ott/374297/2a00000180ffccc3961afc86db797248aeb6/764x430" group-title="Федеральные",Россия 24
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R01_ROSSIA24_VLGOB/variant.m3u8
 
-#EXTINF:-1 tvg-logo="https://s3.dfs.ivi.ru/f3d320408efc5ab66630b9ffc6c6cf2b/files_tv_channel_thumb/56f48702828de52c360d184e67d3a929.jpg/391x220/?q=60&mod=to_webp" group-title="Федеральные",Карусель
+#EXTINF:-1 tvg-logo="https://static.okko.tv/images/v4/dc414994-c75b-48f9-b267-ea7acac7214a?presetId=1152&width=80&scale=2&quality=80&mediaType=webp" group-title="Федеральные",Карусель
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R01_KARUSEL_VLGOB/variant.m3u8
 
 #EXTINF:-1 tvg-logo="https://static.kion.ru/tv/channels/images/formats/CHANNEL_PICTURE_9b502ddc51e96e6793489b0696cb2326.png" group-title="Федеральные",ОТР
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R01_OTR_VLGOB/variant.m3u8
 
-#EXTINF:-1 tvg-logo="http://avatars.mds.yandex.net/get-ott/1534341/2a0000018451e754a0617daa8ba63ca4e8cf/764x430" group-title="Федеральные",ТВЦ
+#EXTINF:-1 tvg-logo="https://static.okko.tv/images/v4/d5e8be22-1bac-4cb8-9d7e-f18a77edeb30?presetId=1152&width=80&scale=2&quality=80&mediaType=webp" group-title="Федеральные",ТВЦ
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R04_TVC_VLGOB/variant.m3u8
 
 #EXTINF:-1 tvg-logo="https://pic.rtbcdn.ru/video/08/1e/081e5740514be005f8a9edd50e40a1cc.jpg?width=1500" group-title="Федеральные",РЕН ТВ
