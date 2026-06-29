@@ -9,10 +9,10 @@ https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R04_ROSSIA1_VLGOB/variant.m3u8
 #EXTINF:-1 tvg-logo="https://ekaterinburg-tr.gazprom.ru/d/story/6f/111/matchtv_logo.png" group-title="Федеральные",Матч!
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R04_ROSSIA2_VLGOB/variant.m3u8
 
-#EXTINF:-1 group-title="Федеральные",НТВ
+#EXTINF:-1 tvg-logo="https://s3.dfs.ivi.ru/f3d320408efc5ab66630b9ffc6c6cf2b/files_tv_channel_thumb/ddfb3e3d87a0561ba0aba5938f7bc541.jpg/391x220/?q=60&mod=to_webp" group-title="Федеральные",НТВ
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R03_NTV_VLGOB/variant.m3u8
 
-#EXTINF:-1 group-title="Федеральные",Пятый канал
+#EXTINF:-1 tvg-logo="https://s3.dfs.ivi.ru/f3d320408efc5ab66630b9ffc6c6cf2b/files_tv_channel_thumb/566b4321fbe64f815a095c0ac5abdd60.jpg/391x220/?q=60&mod=to_webp" group-title="Федеральные",Пятый канал
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R02_5TV_VLGOB/variant.m3u8
 
 #EXTINF:-1 group-title="Федеральные",Россия К
