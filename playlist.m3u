@@ -6,7 +6,7 @@ https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R03_1TV_VLGOB/variant.m3u8
 #EXTINF:-1 tvg-logo="https://television-live.com/uploads/posts/2026-02/thumbs/russia-1.webp" group-title="Федеральные",Россия 1
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R04_ROSSIA1_VLGOB/variant.m3u8
 
-#EXTINF:-1 group-title="Федеральные",Матч!
+#EXTINF:-1 tvg-logo="https://ekaterinburg-tr.gazprom.ru/d/story/6f/111/matchtv_logo.png" group-title="Федеральные",Матч!
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R04_ROSSIA2_VLGOB/variant.m3u8
 
 #EXTINF:-1 group-title="Федеральные",НТВ
