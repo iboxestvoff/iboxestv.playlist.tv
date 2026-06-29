@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Телевизор 34 — Полная версия</title>
+<title>Телевизор 34 — Супер Версия</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -17,6 +17,7 @@
     --muted: #7d8492;
     --accent: #ffb13d;
     --live: #ff5d5d;
+    --fav: #ffc107;
   }
 
   * { box-sizing: border-box; }
@@ -26,38 +27,51 @@
     font-family: 'Inter', system-ui, sans-serif; overflow: hidden;
   }
 
+  /* Стили фокуса для пульта */
   .focusable {
     border: 3px solid transparent;
     transition: all 0.15s ease;
     cursor: pointer;
   }
-  .focusable.tv-highlight {
+  .focusable:focus, .focusable.tv-highlight {
     border-color: var(--accent) !important;
-    transform: scale(1.02);
+    transform: scale(1.04);
     background-color: var(--panel-2) !important;
+    outline: none;
   }
 
   .hidden { display: none !important; }
 
-  /* Навигация (Табы) */
+  /* Навигация (Табы и Поиск) */
   .main-screen { display: flex; flex-direction: column; width: 100vw; height: 100vh; padding: 30px 50px; }
-  .nav-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
-  .nav-left { display: flex; align-items: center; gap: 45px; }
-  .logo-area { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 26px; }
+  .nav-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; gap: 20px; }
+  .nav-left { display: flex; align-items: center; gap: 35px; flex: 1; }
+  .logo-area { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 26px; flex-shrink: 0; }
   .logo-area span { color: var(--accent); }
   
-  .tabs-row { display: flex; gap: 15px; }
+  .tabs-row { display: flex; gap: 10px; }
   .tab-btn {
     background: transparent; border: none; color: var(--muted);
-    font-size: 18px; font-weight: 600; padding: 8px 16px; border-radius: 8px;
+    font-size: 16px; font-weight: 600; padding: 8px 16px; border-radius: 8px;
   }
   .tab-btn.active { color: var(--text); background: var(--panel); border-bottom: 3px solid var(--accent); }
-  .time-clock { font-weight: 600; min-width: 60px; text-align: right; font-family: 'Space Mono', monospace; font-size: 20px; }
+  
+  /* Поисковая строка */
+  .search-box {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 8px 15px; color: var(--text); font-size: 14px; width: 200px;
+    transition: all 0.2s; font-family: inherit;
+  }
+  .search-box:focus { border-color: var(--accent); width: 250px; outline: none; }
+
+  .nav-right { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
+  .time-clock { font-weight: 600; font-family: 'Space Mono', monospace; font-size: 20px; }
 
   /* Общие стили списков */
   .content-view { flex: 1; display: flex; flex-direction: column; gap: 15px; min-height: 0; }
+  .section-header-row { display: flex; align-items: center; justify-content: space-between; }
   .section-label { font-size: 20px; font-weight: 600; color: var(--muted); }
-  .grid-container { display: flex; gap: 20px; overflow-x: auto; padding: 10px 0; scroll-behavior: smooth; }
+  .grid-container { display: flex; gap: 20px; overflow-x: auto; padding: 15px 5px; scroll-behavior: smooth; min-height: 180px; }
   
   /* Карточки */
   .channel-card, .category-card {
@@ -69,10 +83,18 @@
   .card-logo-box img { max-width: 80%; max-height: 100%; object-fit: contain; }
   .card-fallback { font-family: 'Space Mono', monospace; font-size: 22px; color: #fff; }
   .card-num { position: absolute; top: 10px; left: 15px; font-size: 12px; color: rgba(255,255,255,0.4); font-family: 'Space Mono', monospace;}
+  
+  /* Звёздочка Избранного */
+  .fav-star {
+    position: absolute; top: 8px; right: 12px; font-size: 18px; color: rgba(255,255,255,0.2);
+    transition: color 0.2s; cursor: pointer; z-index: 5;
+  }
+  .fav-star.is-fav { color: var(--fav) !important; text-shadow: 0 0 8px rgba(261, 193, 7, 0.6); }
 
   /* Экран Телепрограммы */
   .epg-container { display: flex; gap: 30px; height: 100%; min-height: 0; }
-  .epg-sidebar { width: 30%; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+  .epg-sidebar { width: 30%; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 5px; }
+  .epg-ch-item { background: var(--panel); padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px; text-align: left; width: 100%; border: 3px solid transparent; color: inherit; }
   .epg-main-list { width: 70%; background: var(--panel); border-radius: 14px; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
   
   .epg-row { display: flex; align-items: center; gap: 20px; padding: 12px; border-radius: 8px; background: rgba(255,255,255,0.02); }
@@ -80,29 +102,15 @@
   .epg-time { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent); min-width: 60px; }
   .epg-text { font-size: 16px; font-weight: 500; }
 
-  /* Меню О нас — Под вертикальный QR с сервера */
+  /* Меню О нас */
   .about-box {
-    display: flex;
-    align-items: center;
-    background: var(--panel);
-    border-radius: 16px;
-    padding: 35px;
-    gap: 40px;
-    max-width: 900px;
-    margin: 40px auto 0 auto;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    border: 1px solid var(--line);
+    display: flex; align-items: center; background: var(--panel); border-radius: 16px;
+    padding: 35px; gap: 40px; max-width: 900px; margin: 40px auto 0 auto;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid var(--line);
   }
   .about-qr-frame { 
-    width: 180px;
-    height: auto;
-    background: #fff; 
-    padding: 10px; 
-    border-radius: 14px; 
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 180px; height: auto; background: #fff; padding: 10px; border-radius: 14px; 
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
   }
   .about-qr-frame img { width: 100%; height: auto; display: block; }
   .about-text-side { display: flex; flex-direction: column; gap: 12px; }
@@ -122,430 +130,4 @@
   .osd-left { display: flex; align-items: center; gap: 20px; }
   .osd-channel-number { font-family: 'Space Mono', monospace; font-size: 32px; font-weight: 700; color: var(--accent); }
   .osd-logo-box { width: 100px; height: 65px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 5px; }
-  .osd-logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
-  .osd-logo-box span { font-size: 20px; font-weight: 700; color: #fff; }
-  
-  .osd-center { flex: 1; display: flex; flex-direction: column; gap: 5px; }
-  .osd-ch-name { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); font-weight: 700; }
-  .osd-program-title { font-size: 24px; font-weight: 600; color: #fff; margin-bottom: 5px; }
-  .osd-timeline-row { display: flex; align-items: center; gap: 15px; }
-  .osd-time-stamp { font-family: 'Space Mono', monospace; font-size: 16px; color: var(--muted); }
-  .osd-progress-bg { flex: 1; height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; }
-  .osd-progress-bar { height: 100%; background: var(--accent); width: 0%; }
-  
-  .osd-right { display: flex; align-items: center; }
-  .osd-clock { font-family: 'Space Mono', monospace; font-size: 38px; font-weight: 700; color: #fff; }
-
-  .loading-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); font-size: 18px; color: var(--accent); font-family: 'Space Mono', monospace; z-index: 3; }
-</style>
-</head>
-<body>
-
-  <!-- ГЛАВНЫЙ ЭКРАН -->
-  <div id="view-main" class="main-screen">
-    <header class="nav-bar">
-      <div class="nav-left">
-        <div class="logo-area">ТЕЛЕВИЗОР <span>34</span></div>
-        <div class="tabs-row">
-          <button class="tab-btn active focusable" data-tab="all" onclick="switchTab('all')">Все каналы</button>
-          <button class="tab-btn focusable" data-tab="categories" onclick="switchTab('categories')">Категории</button>
-          <button class="tab-btn focusable" data-tab="epg" onclick="switchTab('epg')">Телепрограмма</button>
-          <button class="tab-btn focusable" data-tab="about" onclick="switchTab('about')">О нас</button>
-        </div>
-      </div>
-      <div class="nav-right">
-        <div class="time-clock" id="clock">00:00</div>
-      </div>
-    </header>
-
-    <!-- ВКЛАДКА 1: ВСЕ КАНАЛЫ -->
-    <div id="tab-content-all" class="content-view">
-      <div id="sectionTitle" class="section-label">Загрузка данных...</div>
-      <div class="grid-container" id="main-carousel"></div>
-    </div>
-
-    <!-- ВКЛАДКА 2: КАТЕГОРИИ -->
-    <div id="tab-content-categories" class="content-view hidden">
-      <div class="section-label">Жанры из плейлиста</div>
-      <div class="grid-container" id="categories-carousel"></div>
-    </div>
-
-    <!-- ВКЛАДКА 3: ТЕЛЕПРОГРАММА -->
-    <div id="tab-content-epg" class="content-view hidden">
-      <div class="epg-container">
-        <div class="epg-sidebar" id="epg-channels-list"></div>
-        <div class="epg-main-list" id="epg-schedule-list">
-          <div style="color:var(--muted); text-align:center; margin-top:40px;">Выберите канал слева для просмотра расписания</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ВКЛАДКА 4: О НАС -->
-    <div id="tab-content-about" class="content-view hidden">
-      <div class="about-box">
-        <div class="about-qr-frame">
-          <img src="https://televizor34.onrender.com/qr_max.png" alt="QR Код">
-        </div>
-        <div class="about-text-side">
-          <div class="about-title">Наш Макс</div>
-          <div class="about-desc">
-            Мы будем рады, если вы подпишитесь на наш канал в Максе! 
-            Этим вы очень поддержите нас и будете получать новости по нашему сервису.
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ЭКРАН ПРОСМОТРА (OSD) -->
-  <div id="view-player" class="player-screen hidden">
-    <div class="full-media-container">
-      <video id="tv-video" playsinline></video>
-      <iframe id="embedFrame" class="hidden" allow="autoplay; fullscreen" allowfullscreen></iframe>
-    </div>
-    <div id="video-loading" class="loading-overlay hidden">Подключение к трансляции...</div>
-
-    <div id="osdMenu" class="osd-overlay">
-      <div class="osd-left">
-        <div class="osd-channel-number" id="osdNum">001</div>
-        <div class="osd-logo-box" id="osdLogo"></div>
-      </div>
-      <div class="osd-center">
-        <div class="osd-ch-name" id="osdChannelName">КАНАЛ</div>
-        <div class="osd-program-title" id="osdTitle">Прямой эфир</div>
-        <div class="osd-timeline-row">
-          <span class="osd-time-stamp" id="osdTimeStart">00:00</span>
-          <div class="osd-progress-bg">
-            <div class="osd-progress-bar" id="osdProgressBar"></div>
-          </div>
-          <span class="osd-time-stamp" id="osdTimeEnd">00:00</span>
-        </div>
-      </div>
-      <div class="osd-right">
-        <div class="osd-clock" id="osdClock">00:00</div>
-      </div>
-    </div>
-  </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js"></script>
-<script>
-  const PLAYLIST_URL = 'https://raw.githubusercontent.com/iboxestvoff/iboxestv.playlist.tv/main/playlist.m3u';
-  const EPG_URL = 'https://raw.githubusercontent.com/iboxestvoff/iboxestv.playlist.tv/epg-data/epg.xml';
-  
-  let allChannels = [];
-  let categories = {};
-  let epgDatabase = {};
-  let currentTab = 'all';
-  let hlsInstance = null;
-  let currentScreen = 'main';
-  let focusedIndex = 0;
-  let osdTimeout = null;
-
-  function parseXmltvDate(dateStr) {
-    if (!dateStr) return new Date();
-    const y = dateStr.substring(0, 4);
-    const m = parseInt(dateStr.substring(4, 6)) - 1;
-    const d = dateStr.substring(6, 8);
-    const h = dateStr.substring(8, 10);
-    const min = dateStr.substring(10, 12);
-    const s = dateStr.substring(12, 14) || "00";
-    return new Date(y, m, d, h, min, s);
-  }
-
-  function formatTime(date) {
-    return String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0');
-  }
-
-  async function loadEpg() {
-    try {
-      const res = await fetch(EPG_URL);
-      const text = await res.text();
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(text, "text/xml");
-      
-      const channelNodes = xmlDoc.getElementsByTagName("channel");
-      const channelMap = {};
-      for (let node of channelNodes) {
-        const id = node.getAttribute("id");
-        const displayName = node.getElementsByTagName("display-name")[0]?.textContent?.trim()?.toLowerCase();
-        if (id && displayName) channelMap[id] = displayName;
-      }
-
-      const programmeNodes = xmlDoc.getElementsByTagName("programme");
-      for (let node of programmeNodes) {
-        const channelId = node.getAttribute("channel");
-        const channelName = channelMap[channelId] || channelId?.toLowerCase();
-        
-        if (!channelName) continue;
-
-        const start = parseXmltvDate(node.getAttribute("start"));
-        const stop = parseXmltvDate(node.getAttribute("stop"));
-        const title = node.getElementsByTagName("title")[0]?.textContent || "Передача";
-
-        if (!epgDatabase[channelName]) epgDatabase[channelName] = [];
-        epgDatabase[channelName].push({ start, stop, title });
-      }
-    } catch (e) {
-      console.error("Ошибка парсинга EPG:", e);
-    }
-  }
-
-  function parseM3U(text) {
-    const lines = text.split(/\r?\n/);
-    const result = [];
-    let pending = null;
-    
-    for (let raw of lines) {
-      const line = raw.trim();
-      if (!line) continue;
-      if (line.startsWith('#EXTINF')) {
-        const logoMatch = line.match(/tvg-logo="([^"]*)"/);
-        const nameMatch = line.match(/,(.*)$/);
-        const groupMatch = line.match(/group-title="([^"]*)"/);
-        const idMatch = line.match(/tvg-id="([^"]*)"/);
-        
-        pending = {
-          id: idMatch ? idMatch[1] : null,
-          logo: logoMatch ? logoMatch[1] : null,
-          name: nameMatch ? nameMatch[1].trim() : 'Канал',
-          group: groupMatch ? groupMatch[1].trim() : 'Другие'
-        };
-      } else if (!line.startsWith('#') && pending) {
-        pending.url = line;
-        result.push(pending);
-        if (!categories[pending.group]) categories[pending.group] = [];
-        categories[pending.group].push(pending);
-        pending = null;
-      }
-    }
-    return result;
-  }
-
-  function getCurrentProgram(channelName) {
-    const list = epgDatabase[channelName?.toLowerCase()];
-    if (!list) return null;
-    const now = new Date();
-    return list.find(p => now >= p.start && now <= p.stop) || null;
-  }
-
-  async function initApp() {
-    await loadEpg();
-    try {
-      const res = await fetch(PLAYLIST_URL, { cache: 'no-store' });
-      const text = await res.text();
-      allChannels = parseM3U(text);
-      renderAllChannels();
-      renderCategories();
-      renderEpgSidebar();
-    } catch (e) {
-      document.getElementById('sectionTitle').innerText = "Ошибка загрузки";
-    }
-  }
-
-  function renderAllChannels() {
-    const container = document.getElementById('main-carousel');
-    document.getElementById('sectionTitle').innerText = `Телеканалы (${allChannels.length})`;
-    container.innerHTML = allChannels.map((ch, idx) => `
-      <div class="focusable channel-card" data-idx="${idx}" onclick="openPlayerView(${idx})">
-        <div class="card-num">${String(idx + 1).padStart(3, '0')}</div>
-        <div class="card-logo-box">
-          ${ch.logo ? `<img src="${ch.logo}">` : `<div class="card-fallback">${ch.name.substring(0,3)}</div>`}
-        </div>
-        <div style="font-size:13px; margin-top:8px; font-weight:500; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; width:100%;">${ch.name}</div>
-      </div>
-    `).join('');
-  }
-
-  function renderCategories() {
-    const container = document.getElementById('categories-carousel');
-    container.innerHTML = Object.keys(categories).map(catName => `
-      <div class="focusable category-card" onclick="selectCategory('${catName}')">
-        <div class="card-fallback" style="font-size:18px; color:var(--accent); text-align:center;">${catName}</div>
-        <div style="font-size:12px; color:var(--muted); margin-top:5px;">Каналов: ${categories[catName].length}</div>
-      </div>
-    `).join('');
-  }
-
-  function selectCategory(catName) {
-    allChannels = categories[catName];
-    renderAllChannels();
-    switchTab('all');
-  }
-
-  function renderEpgSidebar() {
-    const sidebar = document.getElementById('epg-channels-list');
-    sidebar.innerHTML = allChannels.map((ch, idx) => `
-      <div class="focusable" style="background:var(--panel); padding:12px; border-radius:8px; display:flex; align-items:center; gap:10px;" onclick="showRealEpg(${idx})">
-        <div style="font-family: 'Space Mono', monospace; color:var(--accent);">${String(idx+1).padStart(3,'0')}</div>
-        <div style="font-size:14px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${ch.name}</div>
-      </div>
-    `).join('');
-  }
-
-  function showRealEpg(idx) {
-    const ch = allChannels[idx];
-    const container = document.getElementById('epg-schedule-list');
-    const list = epgDatabase[ch.name.toLowerCase()] || [];
-    const now = new Date();
-
-    if (list.length === 0) {
-      container.innerHTML = `<div style="color:var(--muted); text-align:center; margin-top:40px;">Для канала "${ch.name}" нет программы в epg.xml</div>`;
-      return;
-    }
-
-    container.innerHTML = `
-      <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px; border-bottom:1px solid var(--line); padding-bottom:15px;">
-        <div style="font-size:20px; font-weight:700; color:var(--accent);">${ch.name}</div>
-        <button class="focusable" style="background:var(--accent); border:none; color:#000; padding:6px 12px; font-weight:700; border-radius:6px;" onclick="openPlayerView(${idx})">Смотреть эфир</button>
-      </div>
-      ${list.map(p => {
-        const isLive = now >= p.start && now <= p.stop;
-        return `
-          <div class="epg-row ${isLive ? 'current-live' : ''}">
-            <div class="epg-time">${formatTime(p.start)}</div>
-            <div class="epg-text">${p.title} ${isLive ? '<span style="color:var(--live); font-size:12px; margin-left:10px;">● СЕЙЧАС В ЭФИРЕ</span>' : ''}</div>
-          </div>
-        `;
-      }).join('')}
-    `;
-  }
-
-  function switchTab(tabId) {
-    currentTab = tabId;
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-    
-    document.getElementById('tab-content-all').classList.add('hidden');
-    document.getElementById('tab-content-categories').classList.add('hidden');
-    document.getElementById('tab-content-epg').classList.add('hidden');
-    document.getElementById('tab-content-about').classList.add('hidden');
-    
-    document.getElementById(`tab-content-${tabId}`).classList.remove('hidden');
-  }
-
-  function openPlayerView(idx) {
-    currentScreen = 'player';
-    focusedIndex = idx;
-    document.getElementById('view-main').classList.add('hidden');
-    document.getElementById('view-player').classList.remove('hidden');
-    startChannel(idx);
-  }
-
-  function closePlayerView() {
-    currentScreen = 'main';
-    if(hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
-    const video = document.getElementById('tv-video');
-    video.pause(); video.removeAttribute('src'); video.load();
-    document.getElementById('embedFrame').src = 'about:blank';
-    document.getElementById('view-player').classList.add('hidden');
-    document.getElementById('view-main').classList.remove('hidden');
-  }
-
-  function updateOsdProgData(ch) {
-    const prog = getCurrentProgram(ch.name);
-    const titleEl = document.getElementById('osdTitle');
-    const startEl = document.getElementById('osdTimeStart');
-    const endEl = document.getElementById('osdTimeEnd');
-    const bar = document.getElementById('osdProgressBar');
-
-    if (prog) {
-      titleEl.innerText = prog.title;
-      startEl.innerText = formatTime(prog.start);
-      endEl.innerText = formatTime(prog.stop);
-      
-      const total = prog.stop - prog.start;
-      const passed = new Date() - prog.start;
-      const pct = Math.min(Math.max((passed / total) * 100, 0), 100);
-      bar.style.width = pct + '%';
-    } else {
-      titleEl.innerText = "Прямой эфир";
-      startEl.innerText = "--:--";
-      endEl.innerText = "--:--";
-      bar.style.width = '0%';
-    }
-  }
-
-  function startChannel(idx) {
-    const ch = allChannels[idx];
-    if(!ch) return;
-
-    document.getElementById('osdNum').innerText = String(idx + 1).padStart(3, '0');
-    document.getElementById('osdChannelName').innerText = ch.name;
-    document.getElementById('osdLogo').innerHTML = ch.logo ? `<img src="${ch.logo}">` : `<span>${ch.name.substring(0,2)}</span>`;
-
-    updateOsdProgData(ch);
-    showOSD();
-
-    const video = document.getElementById('tv-video');
-    const embed = document.getElementById('embedFrame');
-    const loader = document.getElementById('video-loading');
-    
-    loader.classList.remove('hidden');
-    video.classList.add('hidden');
-    embed.classList.add('hidden');
-
-    const embedInfo = getEmbedInfo(ch.url);
-    if (embedInfo) {
-      loader.classList.add('hidden');
-      embed.classList.remove('hidden');
-      embed.src = embedInfo.embedUrl;
-      return;
-    }
-
-    video.classList.remove('hidden');
-    if (Hls.isSupported()) {
-      if(hlsInstance) hlsInstance.destroy();
-      hlsInstance = new Hls();
-      hlsInstance.loadSource(ch.url);
-      hlsInstance.attachMedia(video);
-      hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => { loader.classList.add('hidden'); video.play().catch(()=>{}); });
-    } else {
-      video.src = ch.url;
-      video.addEventListener('loadedmetadata', () => { loader.classList.add('hidden'); video.play().catch(()=>{}); }, { once: true });
-    }
-  }
-
-  function getEmbedInfo(url) {
-    if (/(^|\.)vk(video)?\.(com|ru)\/(video_ext\.php|video-)/i.test(url)) return { embedUrl: url };
-    const rutubeId = url.match(/rutube\.ru\/(?:play\/embed\/|video\/)([a-z0-9]+)/i);
-    if (rutubeId) return { embedUrl: 'https://rutube.ru/play/embed/' + rutubeId[1] + '/' };
-    return null;
-  }
-
-  function showOSD() {
-    const osd = document.getElementById('osdMenu');
-    osd.style.opacity = '1';
-    clearTimeout(osdTimeout);
-    osdTimeout = setTimeout(() => osd.style.opacity = '0', 5000);
-  }
-
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' || e.key === 'Backspace') {
-      e.preventDefault();
-      if (currentScreen === 'player') closePlayerView();
-    }
-    if (currentScreen === 'player') {
-      showOSD();
-      if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
-        if (focusedIndex < allChannels.length - 1) { focusedIndex++; startChannel(focusedIndex); }
-      } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
-        if (focusedIndex > 0) { focusedIndex--; startChannel(focusedIndex); }
-      }
-    }
-  });
-
-  setInterval(() => {
-    const d = new Date();
-    const tStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-    document.getElementById('clock').innerText = tStr;
-    document.getElementById('osdClock').innerText = tStr;
-    
-    if (currentScreen === 'player' && allChannels[focusedIndex]) {
-      updateOsdProgData(allChannels[focusedIndex]);
-    }
-  }, 1000);
-
-  initApp();
-</script>
-</body>
-</html>
+  .osd-logo-
