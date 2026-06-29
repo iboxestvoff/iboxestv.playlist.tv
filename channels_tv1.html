@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Телевизор 34 — Реальный EPG</title>
+<title>Телевизор 34 — Реальный EPG и О нас</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -80,6 +80,16 @@
   .epg-time { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent); min-width: 60px; }
   .epg-text { font-size: 16px; font-weight: 500; }
 
+  /* Раздел О нас */
+  .about-box {
+    display: flex; background: var(--panel); border-radius: 16px; padding: 35px;
+    gap: 40px; align-items: center; max-width: 850px; margin: 20px 0; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  }
+  .about-qr { width: 200px; height: 200px; background: #fff; padding: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+  .about-qr img { width: 100%; height: 100%; object-fit: contain; }
+  .about-title { font-size: 28px; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
+  .about-desc { font-size: 16px; line-height: 1.6; color: var(--text); font-weight: 500; }
+
   /* ПОЛНОЭКРАННЫЙ ПЛЕЕР С OSD */
   .player-screen { position: relative; width: 100vw; height: 100vh; background: #000; }
   .full-media-container { position: absolute; inset: 0; z-index: 1; }
@@ -121,6 +131,7 @@
           <button class="tab-btn active focusable" data-tab="all" onclick="switchTab('all')">Все каналы</button>
           <button class="tab-btn focusable" data-tab="categories" onclick="switchTab('categories')">Категории</button>
           <button class="tab-btn focusable" data-tab="epg" onclick="switchTab('epg')">Телепрограмма</button>
+          <button class="tab-btn focusable" data-tab="about" onclick="switchTab('about')">О нас</button>
         </div>
       </div>
       <div class="nav-right">
@@ -146,6 +157,23 @@
         <div class="epg-sidebar" id="epg-channels-list"></div>
         <div class="epg-main-list" id="epg-schedule-list">
           <div style="color:var(--muted); text-align:center; margin-top:40px;">Выберите канал слева для просмотра расписания</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ВКЛАДКА 4: О НАС -->
+    <div id="tab-content-about" class="content-view hidden">
+      <div class="section-label">Информация о сервисе</div>
+      <div class="about-box">
+        <div class="about-qr">
+          <img src="https://televizor34.onrender.com/qr_max.png" alt="QR Код">
+        </div>
+        <div>
+          <div class="about-title">Наш Макс</div>
+          <div class="about-desc">
+            Мы будем рады, если вы подпишитесь на наш канал в Максе! 
+            Этим вы очень поддержите нас и сможете первыми получать самые свежие новости и обновления по нашему сервису.
+          </div>
         </div>
       </div>
     </div>
@@ -188,14 +216,13 @@
   
   let allChannels = [];
   let categories = {};
-  let epgDatabase = {}; // Структурированная база телепрограммы
+  let epgDatabase = {};
   let currentTab = 'all';
   let hlsInstance = null;
   let currentScreen = 'main';
   let focusedIndex = 0;
   let osdTimeout = null;
 
-  // Парсинг кастомного формата даты XMLTV (например, 20260629120000 +0300)
   function parseXmltvDate(dateStr) {
     if (!dateStr) return new Date();
     const y = dateStr.substring(0, 4);
@@ -211,7 +238,6 @@
     return String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0');
   }
 
-  // Загрузка и разбор реального EPG.xml
   async function loadEpg() {
     try {
       const res = await fetch(EPG_URL);
@@ -219,7 +245,6 @@
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(text, "text/xml");
       
-      // Сначала соберём маппинг ID каналов к их именам
       const channelNodes = xmlDoc.getElementsByTagName("channel");
       const channelMap = {};
       for (let node of channelNodes) {
@@ -228,7 +253,6 @@
         if (id && displayName) channelMap[id] = displayName;
       }
 
-      // Разбираем программы передач
       const programmeNodes = xmlDoc.getElementsByTagName("programme");
       for (let node of programmeNodes) {
         const channelId = node.getAttribute("channel");
@@ -244,7 +268,7 @@
         epgDatabase[channelName].push({ start, stop, title });
       }
     } catch (e) {
-      console.error("Не удалось распарсить EPG файл:", e);
+      console.error("Ошибка парсинга EPG:", e);
     }
   }
 
@@ -279,7 +303,6 @@
     return result;
   }
 
-  // Получение текущей программы для канала
   function getCurrentProgram(channelName) {
     const list = epgDatabase[channelName?.toLowerCase()];
     if (!list) return null;
@@ -288,7 +311,7 @@
   }
 
   async function initApp() {
-    await loadEpg(); // Сначала парсим телегид
+    await loadEpg();
     try {
       const res = await fetch(PLAYLIST_URL, { cache: 'no-store' });
       const text = await res.text();
@@ -341,7 +364,6 @@
     `).join('');
   }
 
-  // Показ реального расписания из твоего XML в мобильном стиле
   function showRealEpg(idx) {
     const ch = allChannels[idx];
     const container = document.getElementById('epg-schedule-list');
@@ -374,9 +396,12 @@
     currentTab = tabId;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+    
     document.getElementById('tab-content-all').classList.add('hidden');
     document.getElementById('tab-content-categories').classList.add('hidden');
     document.getElementById('tab-content-epg').classList.add('hidden');
+    document.getElementById('tab-content-about').classList.add('hidden');
+    
     document.getElementById(`tab-content-${tabId}`).classList.remove('hidden');
   }
 
@@ -398,7 +423,6 @@
     document.getElementById('view-main').classList.remove('hidden');
   }
 
-  // Обновление OSD данных на основе реального времени из EPG
   function updateOsdProgData(ch) {
     const prog = getCurrentProgram(ch.name);
     const titleEl = document.getElementById('osdTitle');
@@ -461,6 +485,13 @@
       video.src = ch.url;
       video.addEventListener('loadedmetadata', () => { loader.classList.add('hidden'); video.play().catch(()=>{}); }, { once: true });
     }
+  }
+
+  function getEmbedInfo(url) {
+    if (/(^|\.)vk(video)?\.(com|ru)\/(video_ext\.php|video-)/i.test(url)) return { embedUrl: url };
+    const rutubeId = url.match(/rutube\.ru\/(?:play\/embed\/|video\/)([a-z0-9]+)/i);
+    if (rutubeId) return { embedUrl: 'https://rutube.ru/play/embed/' + rutubeId[1] + '/' };
+    return null;
   }
 
   function showOSD() {
