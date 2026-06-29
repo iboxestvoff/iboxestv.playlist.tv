@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Телевизор 34 — Реальный EPG и О нас</title>
+<title>Телевизор 34 — Полная версия</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -39,7 +39,7 @@
 
   .hidden { display: none !important; }
 
-  /* Навигация */
+  /* Навигация (Табы) */
   .main-screen { display: flex; flex-direction: column; width: 100vw; height: 100vh; padding: 30px 50px; }
   .nav-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
   .nav-left { display: flex; align-items: center; gap: 45px; }
@@ -54,7 +54,7 @@
   .tab-btn.active { color: var(--text); background: var(--panel); border-bottom: 3px solid var(--accent); }
   .time-clock { font-weight: 600; min-width: 60px; text-align: right; font-family: 'Space Mono', monospace; font-size: 20px; }
 
-  /* Списки */
+  /* Общие стили списков */
   .content-view { flex: 1; display: flex; flex-direction: column; gap: 15px; min-height: 0; }
   .section-label { font-size: 20px; font-weight: 600; color: var(--muted); }
   .grid-container { display: flex; gap: 20px; overflow-x: auto; padding: 10px 0; scroll-behavior: smooth; }
@@ -80,17 +80,36 @@
   .epg-time { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent); min-width: 60px; }
   .epg-text { font-size: 16px; font-weight: 500; }
 
-  /* Раздел О нас */
+  /* Меню О нас — Под вертикальный QR с сервера */
   .about-box {
-    display: flex; background: var(--panel); border-radius: 16px; padding: 35px;
-    gap: 40px; align-items: center; max-width: 850px; margin: 20px 0; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 35px;
+    gap: 40px;
+    max-width: 900px;
+    margin: 40px auto 0 auto;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    border: 1px solid var(--line);
   }
-  .about-qr { width: 200px; height: 200px; background: #fff; padding: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
-  .about-qr img { width: 100%; height: 100%; object-fit: contain; }
-  .about-title { font-size: 28px; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
-  .about-desc { font-size: 16px; line-height: 1.6; color: var(--text); font-weight: 500; }
+  .about-qr-frame { 
+    width: 180px;
+    height: auto;
+    background: #fff; 
+    padding: 10px; 
+    border-radius: 14px; 
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .about-qr-frame img { width: 100%; height: auto; display: block; }
+  .about-text-side { display: flex; flex-direction: column; gap: 12px; }
+  .about-title { font-size: 32px; font-weight: 700; color: var(--accent); margin: 0; }
+  .about-desc { font-size: 18px; line-height: 1.6; color: var(--text); font-weight: 500; margin: 0; }
 
-  /* ПОЛНОЭКРАННЫЙ ПЛЕЕР С OSD */
+  /* Экран Просмотра (OSD) */
   .player-screen { position: relative; width: 100vw; height: 100vh; background: #000; }
   .full-media-container { position: absolute; inset: 0; z-index: 1; }
   video, iframe { width: 100%; height: 100%; border: none; background: #000; }
@@ -163,16 +182,15 @@
 
     <!-- ВКЛАДКА 4: О НАС -->
     <div id="tab-content-about" class="content-view hidden">
-      <div class="section-label">Информация о сервисе</div>
       <div class="about-box">
-        <div class="about-qr">
+        <div class="about-qr-frame">
           <img src="https://televizor34.onrender.com/qr_max.png" alt="QR Код">
         </div>
-        <div>
+        <div class="about-text-side">
           <div class="about-title">Наш Макс</div>
           <div class="about-desc">
             Мы будем рады, если вы подпишитесь на наш канал в Максе! 
-            Этим вы очень поддержите нас и сможете первыми получать самые свежие новости и обновления по нашему сервису.
+            Этим вы очень поддержите нас и будете получать новости по нашему сервису.
           </div>
         </div>
       </div>
