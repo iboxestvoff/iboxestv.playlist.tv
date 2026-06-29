@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Телевизор 34 — Категории и Телепрограмма</title>
+<title>Телевизор 34 — Реальный EPG</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -39,7 +39,7 @@
 
   .hidden { display: none !important; }
 
-  /* Навигация (Табы) */
+  /* Навигация */
   .main-screen { display: flex; flex-direction: column; width: 100vw; height: 100vh; padding: 30px 50px; }
   .nav-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
   .nav-left { display: flex; align-items: center; gap: 45px; }
@@ -54,12 +54,10 @@
   .tab-btn.active { color: var(--text); background: var(--panel); border-bottom: 3px solid var(--accent); }
   .time-clock { font-weight: 600; min-width: 60px; text-align: right; font-family: 'Space Mono', monospace; font-size: 20px; }
 
-  /* Общие стили списков */
+  /* Списки */
   .content-view { flex: 1; display: flex; flex-direction: column; gap: 15px; min-height: 0; }
   .section-label { font-size: 20px; font-weight: 600; color: var(--muted); }
-  .grid-container {
-    display: flex; gap: 20px; overflow-x: auto; padding: 10px 0; scroll-behavior: smooth;
-  }
+  .grid-container { display: flex; gap: 20px; overflow-x: auto; padding: 10px 0; scroll-behavior: smooth; }
   
   /* Карточки */
   .channel-card, .category-card {
@@ -72,18 +70,17 @@
   .card-fallback { font-family: 'Space Mono', monospace; font-size: 22px; color: #fff; }
   .card-num { position: absolute; top: 10px; left: 15px; font-size: 12px; color: rgba(255,255,255,0.4); font-family: 'Space Mono', monospace;}
 
-  /* Экран Телепрограммы (Мобильный вид расписания) */
+  /* Экран Телепрограммы */
   .epg-container { display: flex; gap: 30px; height: 100%; min-height: 0; }
   .epg-sidebar { width: 30%; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
   .epg-main-list { width: 70%; background: var(--panel); border-radius: 14px; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
   
   .epg-row { display: flex; align-items: center; gap: 20px; padding: 12px; border-radius: 8px; background: rgba(255,255,255,0.02); }
+  .epg-row.current-live { border-left: 4px solid var(--accent); background: rgba(255, 177, 61, 0.05); }
   .epg-time { font-family: 'Space Mono', monospace; font-weight: 700; color: var(--accent); min-width: 60px; }
   .epg-text { font-size: 16px; font-weight: 500; }
 
-  /* ==========================================================================
-     ЭКРАН ПРОСМОТРА (OSD)
-     ========================================================================== */
+  /* ПОЛНОЭКРАННЫЙ ПЛЕЕР С OSD */
   .player-screen { position: relative; width: 100vw; height: 100vh; background: #000; }
   .full-media-container { position: absolute; inset: 0; z-index: 1; }
   video, iframe { width: 100%; height: 100%; border: none; background: #000; }
@@ -98,12 +95,15 @@
   .osd-logo-box { width: 100px; height: 65px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 5px; }
   .osd-logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
   .osd-logo-box span { font-size: 20px; font-weight: 700; color: #fff; }
-  .osd-center { flex: 1; display: flex; flex-direction: column; gap: 10px; }
-  .osd-program-title { font-size: 24px; font-weight: 600; color: #fff; }
+  
+  .osd-center { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+  .osd-ch-name { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); font-weight: 700; }
+  .osd-program-title { font-size: 24px; font-weight: 600; color: #fff; margin-bottom: 5px; }
   .osd-timeline-row { display: flex; align-items: center; gap: 15px; }
   .osd-time-stamp { font-family: 'Space Mono', monospace; font-size: 16px; color: var(--muted); }
   .osd-progress-bg { flex: 1; height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; }
-  .osd-progress-bar { height: 100%; background: var(--accent); }
+  .osd-progress-bar { height: 100%; background: var(--accent); width: 0%; }
+  
   .osd-right { display: flex; align-items: center; }
   .osd-clock { font-family: 'Space Mono', monospace; font-size: 38px; font-weight: 700; color: #fff; }
 
@@ -130,7 +130,7 @@
 
     <!-- ВКЛАДКА 1: ВСЕ КАНАЛЫ -->
     <div id="tab-content-all" class="content-view">
-      <div id="sectionTitle" class="section-label">Загрузка каналов...</div>
+      <div id="sectionTitle" class="section-label">Загрузка данных...</div>
       <div class="grid-container" id="main-carousel"></div>
     </div>
 
@@ -140,14 +140,12 @@
       <div class="grid-container" id="categories-carousel"></div>
     </div>
 
-    <!-- ВКЛАДКА 3: ТЕЛЕПРОГРАММА (Мобильное расписание) -->
+    <!-- ВКЛАДКА 3: ТЕЛЕПРОГРАММА -->
     <div id="tab-content-epg" class="content-view hidden">
       <div class="epg-container">
-        <!-- Левая часть: Выбор канала -->
         <div class="epg-sidebar" id="epg-channels-list"></div>
-        <!-- Правая часть: Мобильная лента передач -->
         <div class="epg-main-list" id="epg-schedule-list">
-          <div style="color:var(--muted); text-align:center; margin-top:40px;">Выберите канал слева, чтобы открыть телепрограмму</div>
+          <div style="color:var(--muted); text-align:center; margin-top:40px;">Выберите канал слева для просмотра расписания</div>
         </div>
       </div>
     </div>
@@ -167,13 +165,14 @@
         <div class="osd-logo-box" id="osdLogo"></div>
       </div>
       <div class="osd-center">
-        <div class="osd-program-title" id="osdTitle">Название канала</div>
+        <div class="osd-ch-name" id="osdChannelName">КАНАЛ</div>
+        <div class="osd-program-title" id="osdTitle">Прямой эфир</div>
         <div class="osd-timeline-row">
-          <span class="osd-time-stamp" id="osdTimeStart">19:51</span>
+          <span class="osd-time-stamp" id="osdTimeStart">00:00</span>
           <div class="osd-progress-bg">
-            <div class="osd-progress-bar" style="width: 45%;"></div>
+            <div class="osd-progress-bar" id="osdProgressBar"></div>
           </div>
-          <span class="osd-time-stamp" id="osdTimeEnd">19:53</span>
+          <span class="osd-time-stamp" id="osdTimeEnd">00:00</span>
         </div>
       </div>
       <div class="osd-right">
@@ -185,32 +184,68 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js"></script>
 <script>
   const PLAYLIST_URL = 'https://raw.githubusercontent.com/iboxestvoff/iboxestv.playlist.tv/main/playlist.m3u';
+  const EPG_URL = 'https://raw.githubusercontent.com/iboxestvoff/iboxestv.playlist.tv/epg-data/epg.xml';
   
   let allChannels = [];
   let categories = {};
+  let epgDatabase = {}; // Структурированная база телепрограммы
   let currentTab = 'all';
   let hlsInstance = null;
   let currentScreen = 'main';
   let focusedIndex = 0;
   let osdTimeout = null;
 
-  // Имитация базы данных телепрограммы (EPG)
-  const MOCK_EPG = [
-    { time: "08:00", title: "Утреннее вещание и новости" },
-    { time: "10:15", title: "Мультсериал: Новые приключения" },
-    { time: "12:00", title: "Информационный выпуск" },
-    { time: "13:30", title: "Документальный фильм" },
-    { time: "16:00", title: "Комедийный сериал" },
-    { time: "18:45", title: "Премьера: Художественный фильм" },
-    { time: "21:00", title: "Вечернее шоу в прямом эфире" },
-    { time: "23:30", title: "Ночной киносеанс" }
-  ];
+  // Парсинг кастомного формата даты XMLTV (например, 20260629120000 +0300)
+  function parseXmltvDate(dateStr) {
+    if (!dateStr) return new Date();
+    const y = dateStr.substring(0, 4);
+    const m = parseInt(dateStr.substring(4, 6)) - 1;
+    const d = dateStr.substring(6, 8);
+    const h = dateStr.substring(8, 10);
+    const min = dateStr.substring(10, 12);
+    const s = dateStr.substring(12, 14) || "00";
+    return new Date(y, m, d, h, min, s);
+  }
 
-  function getEmbedInfo(url) {
-    if (/(^|\.)vk(video)?\.(com|ru)\/(video_ext\.php|video-)/i.test(url)) return { embedUrl: url };
-    const rutubeId = url.match(/rutube\.ru\/(?:play\/embed\/|video\/)([a-z0-9]+)/i);
-    if (rutubeId) return { embedUrl: 'https://rutube.ru/play/embed/' + rutubeId[1] + '/' };
-    return null;
+  function formatTime(date) {
+    return String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0');
+  }
+
+  // Загрузка и разбор реального EPG.xml
+  async function loadEpg() {
+    try {
+      const res = await fetch(EPG_URL);
+      const text = await res.text();
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(text, "text/xml");
+      
+      // Сначала соберём маппинг ID каналов к их именам
+      const channelNodes = xmlDoc.getElementsByTagName("channel");
+      const channelMap = {};
+      for (let node of channelNodes) {
+        const id = node.getAttribute("id");
+        const displayName = node.getElementsByTagName("display-name")[0]?.textContent?.trim()?.toLowerCase();
+        if (id && displayName) channelMap[id] = displayName;
+      }
+
+      // Разбираем программы передач
+      const programmeNodes = xmlDoc.getElementsByTagName("programme");
+      for (let node of programmeNodes) {
+        const channelId = node.getAttribute("channel");
+        const channelName = channelMap[channelId] || channelId?.toLowerCase();
+        
+        if (!channelName) continue;
+
+        const start = parseXmltvDate(node.getAttribute("start"));
+        const stop = parseXmltvDate(node.getAttribute("stop"));
+        const title = node.getElementsByTagName("title")[0]?.textContent || "Передача";
+
+        if (!epgDatabase[channelName]) epgDatabase[channelName] = [];
+        epgDatabase[channelName].push({ start, stop, title });
+      }
+    } catch (e) {
+      console.error("Не удалось распарсить EPG файл:", e);
+    }
   }
 
   function parseM3U(text) {
@@ -225,8 +260,10 @@
         const logoMatch = line.match(/tvg-logo="([^"]*)"/);
         const nameMatch = line.match(/,(.*)$/);
         const groupMatch = line.match(/group-title="([^"]*)"/);
+        const idMatch = line.match(/tvg-id="([^"]*)"/);
         
         pending = {
+          id: idMatch ? idMatch[1] : null,
           logo: logoMatch ? logoMatch[1] : null,
           name: nameMatch ? nameMatch[1].trim() : 'Канал',
           group: groupMatch ? groupMatch[1].trim() : 'Другие'
@@ -234,18 +271,24 @@
       } else if (!line.startsWith('#') && pending) {
         pending.url = line;
         result.push(pending);
-        
-        // Сортировка по категориям
         if (!categories[pending.group]) categories[pending.group] = [];
         categories[pending.group].push(pending);
-        
         pending = null;
       }
     }
     return result;
   }
 
-  async function loadPlaylist() {
+  // Получение текущей программы для канала
+  function getCurrentProgram(channelName) {
+    const list = epgDatabase[channelName?.toLowerCase()];
+    if (!list) return null;
+    const now = new Date();
+    return list.find(p => now >= p.start && now <= p.stop) || null;
+  }
+
+  async function initApp() {
+    await loadEpg(); // Сначала парсим телегид
     try {
       const res = await fetch(PLAYLIST_URL, { cache: 'no-store' });
       const text = await res.text();
@@ -254,11 +297,10 @@
       renderCategories();
       renderEpgSidebar();
     } catch (e) {
-      document.getElementById('sectionTitle').innerText = "Ошибка загрузки плейлиста";
+      document.getElementById('sectionTitle').innerText = "Ошибка загрузки";
     }
   }
 
-  // 1. Рендеринг всех каналов
   function renderAllChannels() {
     const container = document.getElementById('main-carousel');
     document.getElementById('sectionTitle').innerText = `Телеканалы (${allChannels.length})`;
@@ -273,10 +315,9 @@
     `).join('');
   }
 
-  // 2. Рендеринг категорий
   function renderCategories() {
     const container = document.getElementById('categories-carousel');
-    container.innerHTML = Object.keys(categories).map((catName, idx) => `
+    container.innerHTML = Object.keys(categories).map(catName => `
       <div class="focusable category-card" onclick="selectCategory('${catName}')">
         <div class="card-fallback" style="font-size:18px; color:var(--accent); text-align:center;">${catName}</div>
         <div style="font-size:12px; color:var(--muted); margin-top:5px;">Каналов: ${categories[catName].length}</div>
@@ -290,52 +331,55 @@
     switchTab('all');
   }
 
-  // 3. Рендеринг бокового меню телепрограммы
   function renderEpgSidebar() {
     const sidebar = document.getElementById('epg-channels-list');
     sidebar.innerHTML = allChannels.map((ch, idx) => `
-      <div class="focusable" style="background:var(--panel); padding:12px; border-radius:8px; display:flex; align-items:center; gap:10px;" onclick="showMobileEpg(${idx})">
+      <div class="focusable" style="background:var(--panel); padding:12px; border-radius:8px; display:flex; align-items:center; gap:10px;" onclick="showRealEpg(${idx})">
         <div style="font-family: 'Space Mono', monospace; color:var(--accent);">${String(idx+1).padStart(3,'0')}</div>
         <div style="font-size:14px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${ch.name}</div>
       </div>
     `).join('');
   }
 
-  // Показ подробной мобильной версии EPG по клику на канал
-  function showMobileEpg(idx) {
+  // Показ реального расписания из твоего XML в мобильном стиле
+  function showRealEpg(idx) {
     const ch = allChannels[idx];
     const container = document.getElementById('epg-schedule-list');
-    
+    const list = epgDatabase[ch.name.toLowerCase()] || [];
+    const now = new Date();
+
+    if (list.length === 0) {
+      container.innerHTML = `<div style="color:var(--muted); text-align:center; margin-top:40px;">Для канала "${ch.name}" нет программы в epg.xml</div>`;
+      return;
+    }
+
     container.innerHTML = `
       <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px; border-bottom:1px solid var(--line); padding-bottom:15px;">
         <div style="font-size:20px; font-weight:700; color:var(--accent);">${ch.name}</div>
         <button class="focusable" style="background:var(--accent); border:none; color:#000; padding:6px 12px; font-weight:700; border-radius:6px;" onclick="openPlayerView(${idx})">Смотреть эфир</button>
       </div>
-      ${MOCK_EPG.map(item => `
-        <div class="epg-row">
-          <div class="epg-time">${item.time}</div>
-          <div class="epg-text">${item.title}</div>
-        </div>
-      `).join('')}
+      ${list.map(p => {
+        const isLive = now >= p.start && now <= p.stop;
+        return `
+          <div class="epg-row ${isLive ? 'current-live' : ''}">
+            <div class="epg-time">${formatTime(p.start)}</div>
+            <div class="epg-text">${p.title} ${isLive ? '<span style="color:var(--live); font-size:12px; margin-left:10px;">● СЕЙЧАС В ЭФИРЕ</span>' : ''}</div>
+          </div>
+        `;
+      }).join('')}
     `;
   }
 
-  // Переключение вкладок
   function switchTab(tabId) {
     currentTab = tabId;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-    
     document.getElementById('tab-content-all').classList.add('hidden');
     document.getElementById('tab-content-categories').classList.add('hidden');
     document.getElementById('tab-content-epg').classList.add('hidden');
-    
     document.getElementById(`tab-content-${tabId}`).classList.remove('hidden');
   }
 
-  /* ==========================================================================
-     ЛОГИКА УПРАВЛЕНИЯ ПЛЕЕРОМ
-     ========================================================================== */
   function openPlayerView(idx) {
     currentScreen = 'player';
     focusedIndex = idx;
@@ -354,14 +398,40 @@
     document.getElementById('view-main').classList.remove('hidden');
   }
 
+  // Обновление OSD данных на основе реального времени из EPG
+  function updateOsdProgData(ch) {
+    const prog = getCurrentProgram(ch.name);
+    const titleEl = document.getElementById('osdTitle');
+    const startEl = document.getElementById('osdTimeStart');
+    const endEl = document.getElementById('osdTimeEnd');
+    const bar = document.getElementById('osdProgressBar');
+
+    if (prog) {
+      titleEl.innerText = prog.title;
+      startEl.innerText = formatTime(prog.start);
+      endEl.innerText = formatTime(prog.stop);
+      
+      const total = prog.stop - prog.start;
+      const passed = new Date() - prog.start;
+      const pct = Math.min(Math.max((passed / total) * 100, 0), 100);
+      bar.style.width = pct + '%';
+    } else {
+      titleEl.innerText = "Прямой эфир";
+      startEl.innerText = "--:--";
+      endEl.innerText = "--:--";
+      bar.style.width = '0%';
+    }
+  }
+
   function startChannel(idx) {
     const ch = allChannels[idx];
     if(!ch) return;
 
     document.getElementById('osdNum').innerText = String(idx + 1).padStart(3, '0');
-    document.getElementById('osdTitle').innerText = ch.name;
-    document.getElementById('osdLogo').innerHTML = ch.logo ? `<img src="${ch.logo}" alt="">` : `<span>${ch.name.substring(0,2)}</span>`;
+    document.getElementById('osdChannelName').innerText = ch.name;
+    document.getElementById('osdLogo').innerHTML = ch.logo ? `<img src="${ch.logo}">` : `<span>${ch.name.substring(0,2)}</span>`;
 
+    updateOsdProgData(ch);
     showOSD();
 
     const video = document.getElementById('tv-video');
@@ -400,7 +470,6 @@
     osdTimeout = setTimeout(() => osd.style.opacity = '0', 5000);
   }
 
-  // Обработка кнопок назад (Esc) для выхода из плеера
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' || e.key === 'Backspace') {
       e.preventDefault();
@@ -416,15 +485,18 @@
     }
   });
 
-  // Обновление системного времени
   setInterval(() => {
     const d = new Date();
     const tStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
     document.getElementById('clock').innerText = tStr;
     document.getElementById('osdClock').innerText = tStr;
+    
+    if (currentScreen === 'player' && allChannels[focusedIndex]) {
+      updateOsdProgData(allChannels[focusedIndex]);
+    }
   }, 1000);
 
-  loadPlaylist();
+  initApp();
 </script>
 </body>
 </html>
