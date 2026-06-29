@@ -30,34 +30,34 @@ https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R01_OTR_VLGOB/variant.m3u8
 #EXTINF:-1 tvg-logo="https://static.okko.tv/images/v4/d5e8be22-1bac-4cb8-9d7e-f18a77edeb30?presetId=1152&width=80&scale=2&quality=80&mediaType=webp" group-title="Федеральные",ТВЦ
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R04_TVC_VLGOB/variant.m3u8
 
-#EXTINF:-1 tvg-logo="https://pic.rtbcdn.ru/video/08/1e/081e5740514be005f8a9edd50e40a1cc.jpg?width=1500" group-title="Федеральные",РЕН ТВ
+#EXTINF:-1 tvg-logo="https://static.okko.tv/images/v4/8501d67b-346a-4bb0-9283-1512e909bda5?presetId=1152&width=80&scale=2&quality=80&mediaType=webp" group-title="Федеральные",РЕН ТВ
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R02_RENTV_VLGOB/variant.m3u8
 
-#EXTINF:-1 group-title="Федеральные",СПАС
+#EXTINF:-1 tvg-logo="https://static.okko.tv/images/v4/8b27a151-9a1f-47fa-911f-197dd04b44f6?presetId=1152&width=80&scale=2&quality=80&mediaType=webp" group-title="Федеральные",СПАС
 https://tvspas.mediacdn.ru/cdn/spas/tracks-v1a1/mono.ts.m3u8
 
-#EXTINF:-1 group-title="Федеральные",СТС
+#EXTINF:-1 tvg-logo="https://static.okko.tv/images/v4/f0406604-ffbe-4c8d-ae3b-1e25c8dac3d6?presetId=1152&width=80&scale=2&quality=80&mediaType=webp" group-title="Федеральные",СТС
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R02_STS_VLGOB/variant.m3u8
 
-#EXTINF:-1 group-title="Федеральные",Домашний
+#EXTINF:-1 tvg-logo="https://static.okko.tv/images/v4/89968d64-8a3d-4ca7-8371-dd0e537f333a?presetId=1152&width=80&scale=2&quality=80&mediaType=webp" group-title="Федеральные",Домашний
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R04_DOMASHNY_VLGOB/variant.m3u8
 
-#EXTINF:-1 group-title="Федеральные",ТВ3
+#EXTINF:-1 tvg-logo="https://static.okko.tv/images/v4/2f0b38b6-daba-4c45-ba19-eb8519e2be3c?presetId=1152&width=80&scale=2&quality=80&mediaType=webp" group-title="Федеральные",ТВ3
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R01_TV3_VLGOB/variant.m3u8
 
-#EXTINF:-1 group-title="Федеральные",Пятница!
+#EXTINF:-1 tvg-logo="https://static.okko.tv/images/v4/380ff414-7f87-4361-8124-dd0c73589693?presetId=1152&width=80&scale=2&quality=80&mediaType=webp" group-title="Федеральные",Пятница!
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R01_FRIDAY_VLGOB/variant.m3u8
 
-#EXTINF:-1 group-title="Федеральные",Звезда
+#EXTINF:-1 tvg-logo="https://static.okko.tv/images/v4/8465d096-2175-4a4e-8b04-b28533d62052?presetId=1152&width=80&scale=2&quality=80&mediaType=webp" group-title="Федеральные",Звезда
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R03_ZVEZDA_VLGOB/variant.m3u8
 
-#EXTINF:-1 group-title="Федеральные",МИР
+#EXTINF:-1 tvg-logo="https://static.okko.tv/images/v4/9c302d81-e657-4b7a-b33e-a8ee279e5756?presetId=1152&width=80&scale=2&quality=80&mediaType=webp" group-title="Федеральные",МИР
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R02_MIR_VLGOB/variant.m3u8
 
-#EXTINF:-1 group-title="Федеральные",ТНТ
+#EXTINF:-1 tvg-logo="https://static.okko.tv/images/v4/317419f2-07b1-4c6b-99fb-eaab0c513b47?presetId=1152&width=80&scale=2&quality=80&mediaType=webp" group-title="Федеральные",ТНТ
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R01_TNT_VLGOB/variant.m3u8
 
-#EXTINF:-1 group-title="Федеральные",МУЗ ТВ
+#EXTINF:-1 tvg-logo="https://static.okko.tv/images/v4/2f253e62-7cb0-4c03-87e5-3b0e536d80a8?presetId=1152&width=80&scale=2&quality=80&mediaType=webp" group-title="Федеральные",МУЗ ТВ
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R06_MUZTV_VLGOB/variant.m3u8
 
 #EXTINF:-1 group-title="Федеральные", МТВ Волгоград
