@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Телевизор 34</title>
+    <style>
+        :root {
+            --bg-color: #0b0813;
+            --card-bg: #13101c;
+            --text-color: #ffffff;
+            --text-muted: #8e8b99;
+            --gradient-btn: linear-gradient(90deg, #00b2fe, #7a22ff);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 412px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            padding: 16px 20px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo { font-weight: 700; font-size: 22px; }
+
+        .hero-preview { display: flex; justify-content: center; margin: 10px 0; }
+        
+        .phone-mock { 
+            width: 80%; 
+            max-width: 260px; 
+            border-radius: 24px; 
+            box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.6);
+            border: 4px solid #1a1625;
+            object-fit: cover;
+            transition: src 0.3s ease; /* Мягкая смена картинок */
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 6px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--gradient-btn);
+            box-shadow: 0 4px 15px rgba(122, 34, 255, 0.3);
+        }
+
+        .promo-text { text-align: center; }
+        .promo-text h1 { font-size: 28px; margin-bottom: 8px; }
+
+        .download-buttons { display: flex; flex-direction: column; gap: 12px; }
+
+        .btn-download {
+            background: var(--gradient-btn);
+            color: white;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .btn-download:hover { transform: scale(1.02); }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <header>
+        <div class="logo">Телевизор 34</div>
+    </header>
+
+    <!-- Динамический скриншот -->
+    <div class="hero-preview">
+        <img id="mock-image" class="phone-mock" src="https://televizor34.onrender.com/IMG_20260702_174640.png" alt="Интерфейс Телевизор 34">
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchPlatform('android', this)">Android</button>
+        <button class="tab-btn" onclick="switchPlatform('tv', this)">ТВ</button>
+        <button class="tab-btn" onclick="switchPlatform('pc', this)">Компьютер</button>
+    </div>
+
+    <div class="promo-text">
+        <h1 id="platform-title">Телевизор 34 для Android</h1>
+    </div>
+
+    <div class="download-buttons" id="buttons-container">
+        <a href="https://televizor34.onrender.com/channels.html" class="btn-download">Сайт</a>
+        <a href="https://televizor34.onrender.com/tv34_mobile.apk" class="btn-download">Приложение</a>
+        <a href="https://disk.yandex.ru/d/vcC3wONwsQ4Prw" class="btn-download">Скачать с Я. Диска</a>
+    </div>
+</div>
+
+<script>
+    const platformData = {
+        android: {
+            title: "Телевизор 34 для Android",
+            image: "https://televizor34.onrender.com/IMG_20260702_174640.png",
+            buttons: [
+                { text: "Сайт", url: "https://televizor34.onrender.com/channels.html" },
+                { text: "Приложение", url: "https://televizor34.onrender.com/tv34_mobile.apk" },
+                { text: "Скачать с Я. Диска", url: "https://disk.yandex.ru/d/vcC3wONwsQ4Prw" }
+            ]
+        },
+        tv: {
+            title: "Телевизор 34 для Смарт ТВ",
+            image: "https://televizor34.onrender.com/Screenshot_20260702-175352.png",
+            buttons: [
+                { text: "Сайт для ТВ", url: "https://televizor34.onrender.com/channels.html" },
+                { text: "Скачать версию для Android TV (.apk)", url: "#" }
+            ]
+        },
+        pc: {
+            title: "Телевизор 34 для Компьютера",
+            image: "https://televizor34.onrender.com/Screenshot_20260702-175352.png", // Сюда можно будет вставить скрин ПК версии
+            buttons: [
+                { text: "Смотреть в браузере", url: "https://televizor34.onrender.com/channels.html" },
+                { text: "Скачать версию для Windows", url: "#" }
+            ]
+        }
+    };
+
+    function switchPlatform(platform, element) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+        
+        // Обновляем заголовок и картинку
+        document.getElementById('platform-title').innerText = platformData[platform].title;
+        document.getElementById('mock-image').src = platformData[platform].image;
+
+        // Перестраиваем кнопки
+        const container = document.getElementById('buttons-container');
+        container.innerHTML = '';
+
+        platformData[platform].buttons.forEach(btn => {
+            const link = document.createElement('a');
+            link.href = btn.url;
+            link.className = 'btn-download';
+            link.innerText = btn.text;
+            container.appendChild(link);
+        });
+    }
+</script>
+
+</body>
+</html>
