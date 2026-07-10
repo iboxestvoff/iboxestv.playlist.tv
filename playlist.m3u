@@ -69,7 +69,7 @@ http://217.114.191.150/Subbota/index.m3u8
 #EXTINF:-1 group-title="Общественные",Солнце 
 https://zabava-htlive.cdn.ngenix.net/hls/CH_DISNEY/variant.m3u8
 
-#EXTINF:-1 group-title="Общественные", МТВ Волгоград
+#EXTINF:-1 tvg-logo="https://sun9-38.userapi.com/s/v1/ig2/QzILXWdv-_F2pAWO3VAnq-iSe7W871hiQcP19gVswAwaxKYZnXAj5iz2zvlLXCRk8VGx0jqkmDbwr1YhP0yVDU0h.jpg?quality=95&crop=375,207,376,376&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360&ava=1&cs=240x240" group-title="Общественные", МТВ Волгоград
 https://rt-sth-vgrad-htlive.cdn.ngenix.net/hls/CH_R01_MTV/variant.m3u8
 
 #EXTINF:-1 group-title="Общественные",Волгоград 24
