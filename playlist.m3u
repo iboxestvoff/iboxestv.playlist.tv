@@ -429,8 +429,8 @@ http://tv.woobl.ru:9090/channel/n47dbeb87/index.m3u8?q=6b9b9686f4e5713d39b547241
 #EXTINF:-1 group-title="Детские",Cartoon Network
 http://tv.woobl.ru:9090/channel/2ab703d0/index.m3u8?q=6b9b9686f4e5713d39b5472416bf1854
 
-#EXTINF:-1 group-title="Детские",Cartonito
-http://tv.woobl.ru:9090/channel/748c7d82/index.m3u8?q=6b9b9686f4e5713d39b5472416bf1854
+#EXTINF:-1 group-title="Детские",Nickelodeon Junior
+http://smotrim.org/000000449.m3u8
 
 #EXTINF:-1 group-title="Детские",Мультиландия
 https://mhd128.iptv2022.com/p/HN7Y_Edir7xQej1p1Rj8oQ,1765227608/streaming/multimania/324/1/tracks-v5a1/mono.m3u8
