@@ -430,7 +430,6 @@
 </head>
 <body>
 
-<!-- ══════ THEME SPLASH ══════ -->
 <div id="theme-splash">
   <div class="splash-logo">📺</div>
   <div class="splash-title">Телевизор 34</div>
@@ -453,7 +452,6 @@
 
 <div class="phone-wrap">
 
-  <!-- TOP BAR -->
   <div class="top-bar">
     <div class="top-bar-logo">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -464,7 +462,6 @@
     <div class="top-avatar" id="topAvatar" onclick="switchTab('profile')">Г</div>
   </div>
 
-  <!-- HOME SCREEN -->
   <div class="screen active" id="screen-home">
     <div class="hero">
       <div class="hero-top">
@@ -504,7 +501,6 @@
         <span class="dot-green"></span>
       </div>
       
-      <!-- Кнопка Открыть ТВ 34 -->
       <div class="list-row list-row-clickable" onclick="openTvApp()">
         <div class="row-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="#1A56DB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -548,7 +544,6 @@
     </div>
   </div>
 
-  <!-- PROFILE SCREEN -->
   <div class="screen" id="screen-profile">
     <div class="section-label" style="font-size:17px;">Мой профиль</div>
 
@@ -564,7 +559,6 @@
       <div class="avatar-grid" id="avatarGrid"></div>
     </div>
 
-    <!-- Theme switcher -->
     <div class="section-label">Оформление</div>
     <div class="theme-row">
       <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></div>
@@ -611,7 +605,6 @@
     </div>
   </div>
 
-  <!-- BOTTOM NAV -->
   <div class="bottom-nav">
     <button class="nav-tab active" id="nav-home" onclick="switchTab('home')">
       <div class="nav-icon-wrap">
@@ -628,7 +621,6 @@
   </div>
 </div>
 
-<!-- PLAYLIST MODAL -->
 <div id="overlay" onclick="closePlaylist()">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -822,11 +814,7 @@
 
   /* ── ЗАПУСК ПРИЛОЖЕНИЯ ── */
   function openTvApp() {
-    const packageName = 'ru.televizor34.channles.mobile';
-    // Использование Android Intent ссылки для прямого открытия по пакету
-    const intentUrl = `intent://open#Intent;scheme=android-app;package=${packageName};end`;
-    
-    window.location.href = intentUrl;
+    window.location.href = 'https://televizor34.onrender.com/channels.html';
   }
 
   // ── STARTUP ──
