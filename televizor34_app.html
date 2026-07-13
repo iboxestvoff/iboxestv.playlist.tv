@@ -213,6 +213,15 @@
       transition: border-color 0.3s;
     }
     .list-row:last-child { border-bottom: none; }
+    .list-row-clickable {
+      cursor: pointer;
+    }
+    .list-row-clickable:hover {
+      background: var(--blue-light);
+    }
+    body.dark .list-row-clickable:hover {
+      background: #1e2538;
+    }
     .row-icon {
       width: 36px; height: 36px; border-radius: 10px;
       background: var(--blue-icon);
@@ -296,14 +305,14 @@
       transition: background 0.3s, border-color 0.3s;
     }
     .theme-toggle-wrap { display: flex; gap: 8px; margin-left: auto; }
-    .theme-pill {
+    .theme-toggle-wrap .theme-pill {
       padding: 6px 14px; border-radius: 99px;
       font-size: 13px; font-weight: 600; cursor: pointer;
       border: 1.5px solid var(--border);
       background: transparent; color: var(--sub);
       transition: all 0.18s;
     }
-    .theme-pill.active {
+    .theme-toggle-wrap .theme-pill.active {
       background: var(--blue); color: #fff; border-color: var(--blue);
     }
 
@@ -493,6 +502,20 @@
           <div class="row-value" id="activePlaylistRow">Общий</div>
         </div>
         <span class="dot-green"></span>
+      </div>
+      
+      <!-- Кнопка Открыть ТВ 34 -->
+      <div class="list-row list-row-clickable" onclick="openTvApp()">
+        <div class="row-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1A56DB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        </div>
+        <div class="row-text">
+          <div class="row-label">Приложение</div>
+          <div class="row-value">Открыть ТВ 34</div>
+        </div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--sub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
     </div>
 
@@ -795,6 +818,15 @@
   function showToast(msg) {
     const t = document.getElementById('toast'); t.textContent = msg;
     t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  /* ── ЗАПУСК ПРИЛОЖЕНИЯ ── */
+  function openTvApp() {
+    const packageName = 'ru.televizor34.channles.mobile';
+    // Использование Android Intent ссылки для прямого открытия по пакету
+    const intentUrl = `intent://open#Intent;scheme=android-app;package=${packageName};end`;
+    
+    window.location.href = intentUrl;
   }
 
   // ── STARTUP ──
