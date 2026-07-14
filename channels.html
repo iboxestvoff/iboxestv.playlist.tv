@@ -600,7 +600,7 @@
     font-size:13px;
     max-width:80%;
     text-align:center;
-    z-index:100; /* Подняли выше, чтобы не перекрывался */
+    z-index:100;
   }
   .toast.error{border-color:var(--live); color:var(--live);}
 
@@ -704,6 +704,7 @@
         <option value="kids">Детский плейлист</option>
       </select>
       
+      <!-- СЕКЦИЯ АВТОРИЗАЦИИ ЧЕРЕЗ GITHUB -->
       <div class="auth-section">
         <a id="githubLoginBtn" href="https://github.com/login/oauth/authorize?client_id=Ov23lihtytXwTuhR5c0P&scope=read:user" class="btn-github">
           <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor" style="vertical-align: middle;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -880,7 +881,7 @@
     screenEl: document.querySelector('.screen'),
     embedFrame: document.getElementById('embedFrame'),
     
-    // ЭЛЕМЕНТЫ АВТОРИЗАЦИИ (ДОБАВЛЕНО)
+    // ЭЛЕМЕНТЫ АВТОРИЗАЦИИ
     githubLoginBtn: document.getElementById('githubLoginBtn'),
     userInfo: document.getElementById('userInfo'),
     userAvatar: document.getElementById('userAvatar'),
@@ -1050,7 +1051,6 @@
     return bytes;
   }
 
-  // Heavy XML decompression + parsing happens off the main thread so the page never freezes.
   const EPG_WORKER_SRC = [
     'function decodeXmlEntities(s){',
     '  return s.replace(/&(amp|lt|gt|quot|apos|#x[0-9a-fA-F]+|#\\d+);/g, function(m, g){',
@@ -1167,7 +1167,6 @@
     });
   }
 
-  // IndexedDB cache so a page reload doesn't re-download/re-parse the same EPG.
   const EPG_DB_NAME = 'televizor34-epg';
   const EPG_STORE = 'cache';
   const EPG_CACHE_KEY = 'epg-v1';
@@ -1204,7 +1203,7 @@
         idByNormalizedName: data.idByNormalizedName,
         programsByChannelId: data.programsByChannelId
       }, EPG_CACHE_KEY);
-    }catch(e){ /* кэш не критичен — просто пропускаем */ }
+    }catch(e){ }
   }
 
   async function loadEpg(url){
@@ -1220,14 +1219,14 @@
       return;
     }
 
-    setEpgStatus('Загрузка телепрограммы… файл может быть большим (десятки МБ), это может занять время.');
+    setEpgStatus('Загрузка телепрограммы…');
 
     let res;
     try{
       res = await fetch(url, { cache: 'no-store' });
     }catch(err){
       epgData = null;
-      setEpgStatus('Не удалось подключиться к серверу EPG: ' + err.message + '. Возможно, сервер блокирует запросы из браузера (CORS).', true);
+      setEpgStatus('Не удалось подключиться к серверу EPG: ' + err.message, true);
       els.epgLoadBtn.disabled = false;
       return;
     }
@@ -1251,7 +1250,7 @@
           setEpgStatus('Загрузка телепрограммы… ' + (received / 1048576).toFixed(1) + ' МБ');
         }
       });
-      setEpgStatus('Распаковка и разбор телепрограммы… (страница не зависнет — это идёт в фоновом потоке)');
+      setEpgStatus('Распаковка и разбор телепрограммы…');
 
       const result = await parseEpgInWorker(bytes);
       epgData = result;
@@ -1286,7 +1285,7 @@
     return '';
   }
 
-  // --- ЛОГИКА ДЛЯ GITHUB OAUTH АВТОРИЗАЦИИ (ДОБАВЛЕНО) ---
+  // --- ЛОГИКА ДЛЯ GITHUB OAUTH АВТОРИЗАЦИИ (ИСПРАВЛЕНО!) ---
   function updateAuthUI(user) {
     if (user) {
       els.githubLoginBtn.classList.add('hidden');
@@ -1310,17 +1309,20 @@
     }
   }
 
+  // Делаем запросы на полный, прямой URL-адрес вашего бэкенда на Render
+  const BACKEND_URL = 'https://iboxestvoff.onrender.com';
+
   async function handleGitHubCallback() {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
 
     if (code) {
-      // Очищаем адресную строку, чтобы убрать параметр ?code=...
       window.history.replaceState({}, document.title, window.location.pathname);
-      showToast('Авторизация через GitHub...', false);
+      showToast('Авторизация через GitHub... (Сервер может «просыпаться» до 30 сек)', false);
 
       try {
-        const response = await fetch(`/api/auth/github?code=${code}`);
+        // Запрос идет на правильный бэкенд на Render
+        const response = await fetch(`${BACKEND_URL}/api/auth/github?code=${code}`);
         const data = await response.json();
 
         if (response.ok && data.user) {
@@ -1331,7 +1333,7 @@
           showToast('Ошибка авторизации: ' + (data.error || 'Неизвестная ошибка'), true);
         }
       } catch (err) {
-        showToast('Не удалось связаться с сервером авторизации', true);
+        showToast('Не удалось связаться с сервером авторизации. Проверьте, запущен ли бэкенд на Render.', true);
         console.error(err);
       }
     }
@@ -1364,13 +1366,13 @@
 
   function startRecording(){
     if(currentIndex < 0){ showToast('Сначала выберите канал.', true); return; }
-    if(isEmbedActive){ showToast('Запись недоступна для встроенных трансляций VK/Rutube — можно записывать только потоки из плейлиста.', true); return; }
-    if(!window.MediaRecorder){ showToast('Браузер не поддерживает запись (MediaRecorder).', true); return; }
+    if(isEmbedActive){ showToast('Запись недоступна для встроенных трансляций VK/Rutube.', true); return; }
+    if(!window.MediaRecorder){ showToast('Браузер не поддерживает запись.', true); return; }
 
     const isAudio = !els.audioFace.classList.contains('hidden');
     const el = isAudio ? els.audioEl : els.video;
     const captureFn = el.captureStream || el.mozCaptureStream;
-    if(!captureFn){ showToast('Браузер не поддерживает захват потока с этого плеера.', true); return; }
+    if(!captureFn){ showToast('Браузер не поддерживает захват потока.', true); return; }
 
     let stream;
     try{
@@ -1380,7 +1382,7 @@
       return;
     }
     if(!stream || stream.getTracks().length === 0){
-      showToast('Поток пуст — источник может блокировать захват (CORS).', true);
+      showToast('Поток пуст (CORS блокировка).', true);
       return;
     }
 
@@ -1416,7 +1418,7 @@
 
   function finalizeRecording(){
     if(recordedChunks.length === 0){
-      showToast('Запись пустая — возможно, источник защищён от захвата (CORS).', true);
+      showToast('Запись пустая.', true);
       return;
     }
     const mimeType = mediaRecorder.mimeType || 'video/webm';
@@ -1483,7 +1485,7 @@
         els.epgUrlInput.value = epgMatch[1];
       }
       const parsed = parseM3U(text);
-      if(parsed.length === 0) throw new Error('в файле не найдено ни одного канала (#EXTINF)');
+      if(parsed.length === 0) throw new Error('В файле не найдено ни одного канала');
       channels = parsed;
       renderGroups(channels);
       setStatus(channels.length + ' каналов загружено');
@@ -1620,7 +1622,7 @@
 
   function describeHlsError(data){
     if(data && data.type === 'networkError'){
-      return 'Сервер потока не отвечает или блокирует браузерные запросы (CORS). Такие каналы часто работают в VLC/IPTV-плеере, но не в браузере.';
+      return 'Сервер потока не отвечает (CORS). Такие каналы часто работают в VLC/IPTV-плеере, но не в браузере.';
     }
     if(data && data.type === 'mediaError'){
       return 'Поток повреждён или формат не поддерживается браузером.';
@@ -1859,7 +1861,7 @@
   fetchPlaylist(PLAYLISTS.main);
   loadEpg(els.epgUrlInput.value.trim());
   
-  // ЗАПУСК ИНИЦИАЛИЗАЦИИ СЕССИИ И ОБРАБОТКИ ВХОДА (ДОБАВЛЕНО)
+  // ИНИЦИАЛИЗАЦИЯ СЕССИИ И ОБРАБОТКИ ВХОДА
   checkSession();
   handleGitHubCallback();
 </script>
