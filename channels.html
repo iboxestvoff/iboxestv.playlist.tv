@@ -88,65 +88,6 @@
   .hidden{display:none !important;}
   .search-wrap{margin-left:auto;}
 
-  /* ---------- Блок авторизации GitHub ---------- */
-  .auth-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .btn-github {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #24292e;
-    color: #ffffff;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background 0.2s;
-  }
-  .btn-github:hover {
-    background: #2f363d;
-  }
-  .github-icon {
-    width: 16px;
-    height: 16px;
-    fill: currentColor;
-  }
-  .user-profile {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--panel-2);
-    padding: 4px 10px 4px 6px;
-    border-radius: 20px;
-    border: 1px solid var(--line);
-  }
-  .user-profile img {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-  }
-  .user-profile span {
-    font-size: 13.5px;
-    font-weight: 500;
-  }
-  .btn-logout {
-    background: transparent;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 14px;
-    padding: 0 4px;
-  }
-  .btn-logout:hover {
-    color: var(--live);
-  }
-
   /* ---------- Body layout ---------- */
   .body-grid{
     flex:1;
@@ -502,7 +443,7 @@
   .ch-logo{
     width:42px;
     height:42px;
-    border-radius:999px; /* Скругление логотипов */
+    border-radius:9px;
     flex-shrink:0;
     overflow:hidden;
     position:relative;
@@ -659,7 +600,7 @@
     font-size:13px;
     max-width:80%;
     text-align:center;
-    z-index:6;
+    z-index:100; /* Подняли выше, чтобы не перекрывался */
   }
   .toast.error{border-color:var(--live); color:var(--live);}
 
@@ -669,6 +610,66 @@
     inset:0;
     background:rgba(0,0,0,0.55);
     z-index:15;
+  }
+
+  /* Стили для секции профиля и кнопки GitHub в шапке */
+  .auth-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .btn-github {
+    text-decoration: none;
+    background: #24292e;
+    color: #ffffff;
+    border: 1px solid #3f4448;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-weight: 600;
+    font-size: 13.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-github:hover {
+    background: #2f363d;
+  }
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    padding: 4px 10px 4px 6px;
+    border-radius: 20px;
+  }
+  .user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--line);
+  }
+  .user-login {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .btn-logout {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 11px;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    text-decoration: underline;
+  }
+  .btn-logout:hover {
+    color: var(--live);
   }
 
   @media (max-width:880px){
@@ -702,6 +703,19 @@
         <option value="main">Основной плейлист</option>
         <option value="kids">Детский плейлист</option>
       </select>
+      
+      <div class="auth-section">
+        <a id="githubLoginBtn" href="https://github.com/login/oauth/authorize?client_id=Ov23lihtytXwTuhR5c0P&scope=read:user" class="btn-github">
+          <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor" style="vertical-align: middle;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          Войти
+        </a>
+        <div id="userInfo" class="user-profile hidden">
+          <img id="userAvatar" class="user-avatar" src="" alt="Аватар">
+          <span id="userLogin" class="user-login"></span>
+          <button id="logoutBtn" class="btn-logout" type="button">Выйти</button>
+        </div>
+      </div>
+
       <button id="loadBtn" class="btn">Обновить</button>
       <input id="epgUrlInput" type="url" class="hidden" placeholder="Ссылка на EPG (XMLTV)" value="https://raw.githubusercontent.com/iboxestvoff/iboxestv.playlist.tv/epg-data/epg.xml" style="min-width:190px;" />
       <button id="epgLoadBtn" class="btn hidden">Загрузить программу</button>
@@ -716,17 +730,6 @@
           <span id="recordLabel">Запись</span>
         </button>
         <span id="recordTimer" class="record-timer hidden">00:00</span>
-      </div>
-      <div class="auth-wrap">
-        <a id="githubLoginBtn" href="https://github.com/login/oauth/authorize?client_id=Ov23lihtytXwTuhR5c0P&scope=read:user" class="btn-github">
-          <svg class="github-icon" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-          Войти
-        </a>
-        <div id="userProfile" class="user-profile hidden">
-          <img id="userAvatar" src="" alt="Аватар">
-          <span id="username"></span>
-          <button id="logoutBtn" class="btn-logout" title="Выйти">✕</button>
-        </div>
       </div>
     </div>
   </header>
@@ -876,11 +879,13 @@
     fsExitIcon: document.getElementById('fsExitIcon'),
     screenEl: document.querySelector('.screen'),
     embedFrame: document.getElementById('embedFrame'),
+    
+    // ЭЛЕМЕНТЫ АВТОРИЗАЦИИ (ДОБАВЛЕНО)
     githubLoginBtn: document.getElementById('githubLoginBtn'),
-    userProfile: document.getElementById('userProfile'),
+    userInfo: document.getElementById('userInfo'),
     userAvatar: document.getElementById('userAvatar'),
-    username: document.getElementById('username'),
-    logoutBtn: document.getElementById('logoutBtn')
+    userLogin: document.getElementById('userLogin'),
+    logoutBtn: document.getElementById('logoutBtn'),
   };
 
   let mobileCategoryFilter = null;
@@ -1280,6 +1285,64 @@
     }
     return '';
   }
+
+  // --- ЛОГИКА ДЛЯ GITHUB OAUTH АВТОРИЗАЦИИ (ДОБАВЛЕНО) ---
+  function updateAuthUI(user) {
+    if (user) {
+      els.githubLoginBtn.classList.add('hidden');
+      els.userInfo.classList.remove('hidden');
+      els.userAvatar.src = user.avatar_url || 'https://github.com/identicons/guest.png';
+      els.userLogin.textContent = user.login || '';
+    } else {
+      els.githubLoginBtn.classList.remove('hidden');
+      els.userInfo.classList.add('hidden');
+    }
+  }
+
+  function checkSession() {
+    const savedUser = localStorage.getItem('github_user');
+    if (savedUser) {
+      try {
+        updateAuthUI(JSON.parse(savedUser));
+      } catch(e) {
+        localStorage.removeItem('github_user');
+      }
+    }
+  }
+
+  async function handleGitHubCallback() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+
+    if (code) {
+      // Очищаем адресную строку, чтобы убрать параметр ?code=...
+      window.history.replaceState({}, document.title, window.location.pathname);
+      showToast('Авторизация через GitHub...', false);
+
+      try {
+        const response = await fetch(`/api/auth/github?code=${code}`);
+        const data = await response.json();
+
+        if (response.ok && data.user) {
+          localStorage.setItem('github_user', JSON.stringify(data.user));
+          updateAuthUI(data.user);
+          showToast(`Добро пожаловать, ${data.user.login || 'пользователь'}!`, false);
+        } else {
+          showToast('Ошибка авторизации: ' + (data.error || 'Неизвестная ошибка'), true);
+        }
+      } catch (err) {
+        showToast('Не удалось связаться с сервером авторизации', true);
+        console.error(err);
+      }
+    }
+  }
+
+  els.logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('github_user');
+    updateAuthUI(null);
+    showToast('Вы вышли из профиля');
+  });
+  // -----------------------------------------------------
 
   function extFromMime(mime){
     return mime && mime.includes('mp4') ? 'mp4' : 'webm';
@@ -1792,75 +1855,13 @@
     if(e.key === 'Escape') setRailOpen(false);
   });
 
-  // ---------- Авторизация GitHub (Логика клиента) ----------
-  
-  function initAuth() {
-    const cachedUser = localStorage.getItem('github_user');
-    if (cachedUser) {
-      try {
-        renderUser(JSON.parse(cachedUser));
-      } catch (e) {
-        localStorage.removeItem('github_user');
-      }
-    }
-    
-    // Обработка возврата (callback) от GitHub
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    if (code) {
-      // Очищаем код из URL, чтобы не отправлять его заново при обновлении страницы
-      window.history.replaceState({}, document.title, window.location.pathname);
-      handleCallback(code);
-    }
-  }
-
-  async function handleCallback(code) {
-    showToast('Авторизация через GitHub...');
-    els.githubLoginBtn.classList.add('hidden');
-    
-    try {
-      // Отправляем код на ваш бэкенд на Render для обмена на токен доступа
-      const response = await fetch('/api/auth/github?code=' + encodeURIComponent(code));
-      if (!response.ok) throw new Error('Ошибка сервера авторизации');
-      
-      const userData = await response.json();
-      if (userData && userData.login) {
-        localStorage.setItem('github_user', JSON.stringify(userData));
-        renderUser(userData);
-        showToast('Рады видеть вас, ' + userData.login + '!');
-      } else {
-        throw new Error('Данные пользователя не получены');
-      }
-    } catch (err) {
-      console.error(err);
-      showToast('Не удалось войти через GitHub', true);
-      els.githubLoginBtn.classList.remove('hidden');
-    }
-  }
-
-  function renderUser(user) {
-    if (user) {
-      els.userAvatar.src = user.avatar_url || '';
-      els.username.textContent = user.login || '';
-      els.userProfile.classList.remove('hidden');
-      els.githubLoginBtn.classList.add('hidden');
-    } else {
-      els.userProfile.classList.add('hidden');
-      els.githubLoginBtn.classList.remove('hidden');
-    }
-  }
-
-  els.logoutBtn.addEventListener('click', () => {
-    localStorage.removeItem('github_user');
-    renderUser(null);
-    showToast('Вы вышли из профиля GitHub');
-  });
-
-  // Запуск инициализации авторизации
-  initAuth();
-
+  // Запуск инициализации при загрузке страницы
   fetchPlaylist(PLAYLISTS.main);
   loadEpg(els.epgUrlInput.value.trim());
+  
+  // ЗАПУСК ИНИЦИАЛИЗАЦИИ СЕССИИ И ОБРАБОТКИ ВХОДА (ДОБАВЛЕНО)
+  checkSession();
+  handleGitHubCallback();
 </script>
 </body>
 </html>
