@@ -714,7 +714,7 @@
         <option value="kids">Детский плейлист</option>
       </select>
       <button id="loadBtn" class="btn">Обновить</button>
-      <input id="epgUrlInput" type="url" class="hidden" placeholder="Ссылка на EPG (XMLTV)" value="https://raw.githubusercontent.com/iboxestvoff/iboxestv.playlist.tv/epg-data/epg.xml" style="min-width:190px;" />
+      <input id="epgUrlInput" type="url" class="hidden" placeholder="Ссылка на EPG (XMLTV)" value="https://raw.githubusercontent.com/iboxestvoff/televizor34_serverfiles/epg-data/epg.xml" style="min-width:190px;" />
       <button id="epgLoadBtn" class="btn hidden">Загрузить программу</button>
       <button id="epgFileBtn" class="btn hidden" type="button" title="Надёжный способ, не зависит от CORS">Файл с компьютера</button>
       <input id="epgFileInput" type="file" accept=".xml,.txt,application/xml,text/xml" class="hidden" />
@@ -782,7 +782,7 @@
         <div id="loading" class="loading hidden">Подключение…</div>
 
         <div id="errorBox" class="error-box hidden">
-          <div class="error-title">Выбранный канал временно не работает, обратитесь в поддержку</div>
+          <div class="error-title">Канал не работает</div>
           <div class="error-detail" id="errorDetail"></div>
           <div class="error-actions">
             <button id="retryBtn">Повторить</button>
@@ -833,8 +833,7 @@
   const YANDEX_CLIENT_ID = '0fc0a6b7929b4efdb1822f75b1c078b8'; 
 
   const PLAYLISTS = {
-    main: 'https://raw.githubusercontent.com/iboxestvoff/iboxestv.playlist.tv/main/playlist.m3u',
-    kids: 'https://raw.githubusercontent.com/iboxestvoff/iboxestv.playlist.tv/main/kids_playlist.m3u',
+    main: 'https://raw.githubusercontent.com/iboxestvoff/televizor34_serverfiles/main/playlist.m3u',
   };
 
   const els = {
