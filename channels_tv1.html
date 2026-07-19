@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Телевизор 34 — Исправленная версия</title>
+<title>Телевизор 34 — С подсветкой пульта</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -27,17 +27,23 @@
     font-family: 'Inter', system-ui, sans-serif; overflow: hidden;
   }
 
-  /* Стили фокуса для пульта */
+  /* ==========================================================================
+     УЛУЧШЕННЫЕ СТИЛИ ФОКУСА ДЛЯ ПУЛЬТА
+     ========================================================================== */
   .focusable {
-    border: 3px solid transparent;
-    transition: all 0.15s ease;
+    border: 3px solid transparent !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
+    outline: none !important;
   }
+  
+  /* Когда пульт "встал" на элемент (через focus или класс tv-highlight) */
   .focusable:focus, .focusable.tv-highlight {
     border-color: var(--accent) !important;
-    transform: scale(1.04);
+    transform: scale(1.06);
     background-color: var(--panel-2) !important;
-    outline: none;
+    box-shadow: 0 0 20px rgba(255, 177, 61, 0.3) !important;
+    z-index: 10;
   }
 
   .hidden { display: none !important; }
@@ -96,7 +102,7 @@
     padding: 8px 12px; color: var(--text); font-size: 14px; width: 160px;
     transition: width 0.2s; font-family: inherit;
   }
-  .search-box:focus { border-color: var(--accent); width: 220px; outline: none; }
+  .search-box:focus { border-color: var(--accent); width: 220px; }
 
   .time-clock { font-weight: 700; font-family: 'Space Mono', monospace; font-size: 18px; min-width: 55px; }
 
@@ -255,7 +261,6 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js"></script>
 <script>
-  // Исправленные URL-адреса для скачивания из ветки main вашего репозитория
   const PLAYLIST_URL = 'https://raw.githubusercontent.com/iboxestvoff/televizor34_serverfiles/main/playlist.m3u';
   const EPG_URL = 'https://raw.githubusercontent.com/iboxestvoff/televizor34_serverfiles/main/epg/epg.xml';
   
@@ -369,7 +374,12 @@
       renderAllChannels();
       renderCategories();
       renderEpgSidebar();
-      if(document.activeElement) document.activeElement.blur();
+      
+      // Автоматический фокус на первую вкладку при старте для удобства пульта
+      setTimeout(() => {
+        const firstTab = document.querySelector('.tab-btn.active');
+        if(firstTab) firstTab.focus();
+      }, 300);
     } catch (e) {
       document.getElementById('sectionTitle').innerText = "Ошибка сети (Плейлист не найден)";
       console.error(e);
@@ -572,6 +582,7 @@
     osdTimeout = setTimeout(() => o.style.opacity = '0', 5000);
   }
 
+  // ОБРАБОТКА ДВИЖЕНИЯ ПУЛЬТА И АВТОСКРОЛЛА КОНТЕЙНЕРОВ
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' || e.key === 'Backspace') {
       e.preventDefault();
@@ -602,7 +613,19 @@
     } else if (e.key === 'ArrowUp') {
       if (a.getAttribute('data-type') === 'channel' || a.getAttribute('data-type') === 'category' || a.getAttribute('data-type') === 'epg-ch') nxt = document.querySelector('.tab-btn.active');
     }
-    if (nxt && nxt.classList.contains('focusable')) { e.preventDefault(); nxt.focus(); }
+    if (nxt && nxt.classList.contains('focusable')) { 
+      e.preventDefault(); 
+      nxt.focus(); 
+      
+      // Автоматическая прокрутка каруселей за фокусом пульта
+      const p = nxt.parentElement;
+      if (p && (p.id === 'main-carousel' || p.id === 'categories-carousel')) {
+        p.scrollTo({
+          left: nxt.offsetLeft - p.offsetWidth / 2 + nxt.offsetWidth / 2,
+          behavior: 'smooth'
+        });
+      }
+    }
   });
 
   setInterval(() => {
