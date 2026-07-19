@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Телевизор 34 — Чистый плеер</title>
+<title>Телевизор 34 — Альбомные иконки</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -110,21 +110,42 @@
   
   .grid-container { display: flex; gap: 20px; overflow-x: auto; padding: 10px 5px 20px 5px; scroll-behavior: smooth; }
   
+  /* УБРАЛИ КАНТЫ И ВНУТРЕННИЕ ОТСТУПЫ, ЧТОБЫ КАРТИНКА СЕЛА НА ВСЮ КНОПКУ */
   .channel-card, .category-card {
     width: 210px; height: 130px; border-radius: 14px; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; position: relative; padding: 15px; flex-shrink: 0;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.4); background: var(--panel);
+    position: relative; flex-shrink: 0; overflow: hidden;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4); background: var(--panel); padding: 0;
   }
-  .card-logo-box { width: 100%; height: 55px; display: flex; align-items: center; justify-content: center; }
-  .card-logo-box img { max-width: 80%; max-height: 100%; object-fit: contain; }
-  .card-fallback { font-family: 'Space Mono', monospace; font-size: 20px; color: #fff; }
-  .card-num { position: absolute; top: 10px; left: 12px; font-size: 11px; color: rgba(255,255,255,0.4); font-family: 'Space Mono', monospace;}
+  
+  /* РАСТЯГИВАЕМ КОНТЕЙНЕР НА ВСЮ КАРТОЧКУ */
+  .card-logo-box { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  
+  /* ЭФФЕКТ СЛИЯНИЯ: ТЕПЕРЬ ОБЛОЖКА ЗАПОЛНЯЕТ ВСЁ ПРОСТРАНСТВО БЕЗ ИСКАЖЕНИЙ */
+  .card-logo-box img { width: 100%; height: 100%; object-fit: cover; }
+  
+  .card-fallback { font-family: 'Space Mono', monospace; font-size: 20px; color: #fff; text-align: center; padding: 10px; }
+  
+  /* СТИЛЬНАЯ ПЛАШКА С НАЗВАНИЕМ ПОВЕРХ КАРТИНКИ СНИЗУ */
+  .card-title-bar {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    background: linear-gradient(0deg, rgba(11,14,20,0.95) 0%, rgba(11,14,20,0.6) 70%, rgba(11,14,20,0) 100%);
+    padding: 25px 10px 8px 10px; font-size: 12px; font-weight: 600;
+    text-overflow: ellipsis; overflow: hidden; white-space: nowrap; text-align: center;
+    z-index: 4;
+  }
+  
+  /* СМЕСТИЛИ НОМЕР И ЗВЕЗДУ, ЧТОБЫ ОНИ КРАСИВО СМОТРЕЛИСЬ ПОВЕРХ ФОНА */
+  .card-num { 
+    position: absolute; top: 10px; left: 12px; font-size: 11px; 
+    color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    font-family: 'Space Mono', monospace; z-index: 5;
+  }
   
   .fav-star {
-    position: absolute; top: 8px; right: 12px; font-size: 18px; color: rgba(255,255,255,0.2);
-    transition: color 0.2s; cursor: pointer; z-index: 5;
+    position: absolute; top: 8px; right: 12px; font-size: 18px; color: rgba(255,255,255,0.4);
+    transition: color 0.2s; cursor: pointer; z-index: 5; text-shadow: 0 1px 4px rgba(0,0,0,0.8);
   }
-  .fav-star.is-fav { color: var(--fav) !important; text-shadow: 0 0 8px rgba(255, 193, 7, 0.6); }
+  .fav-star.is-fav { color: var(--fav) !important; text-shadow: 0 0 8px rgba(255, 193, 7, 0.8); }
 
   /* EPG / О НАС */
   .epg-container { display: flex; gap: 25px; height: 100%; min-height: 0; }
@@ -147,13 +168,11 @@
   .about-title { font-size: 28px; font-weight: 700; color: var(--accent); margin: 0; }
   .about-desc { font-size: 16px; line-height: 1.5; color: var(--text); margin: 0; }
 
-  /* ПЛЕЕР И СКРЫТИЕ ДЕФОЛТНОЙ ИКОНКИ PLAY */
+  /* ПЛЕЕР */
   .player-screen { position: relative; width: 100vw; height: 100vh; background: #000; }
   .full-media-container { position: absolute; inset: 0; z-index: 1; }
-  
   video, iframe { width: 100%; height: 100%; border: none; background: #000; }
   
-  /* Прячем встроенную кнопку запуска во всех браузерах (Tizen, WebOS, Chrome, Safari) */
   video::-webkit-media-controls-start-playback-button,
   video::-webkit-media-controls-play-button,
   video::-webkit-media-controls-panel {
@@ -239,7 +258,6 @@
 
   <div id="view-player" class="player-screen hidden">
     <div class="full-media-container">
-      <!-- Убран атрибут controls, чтобы плеер управлялся исключительно скриптом без вызова дефолтных иконок браузера -->
       <video id="tv-video" playsinline></video>
       <iframe id="embedFrame" class="hidden" allow="autoplay; fullscreen" allowfullscreen></iframe>
     </div>
@@ -269,7 +287,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js"></script>
 <script>
-  const PLAYLIST_URL = 'https://raw.githubusercontent.com/iboxestvoff/televizor34_serverfiles/main/playlist_tv.m3u';
+  const PLAYLIST_URL = 'https://raw.githubusercontent.com/iboxestvoff/televizor34_serverfiles/main/playlist.m3u';
   const EPG_URL = 'https://raw.githubusercontent.com/iboxestvoff/televizor34_serverfiles/main/epg/epg.xml';
   
   let allChannels = [];
@@ -432,7 +450,7 @@
         <div class="card-logo-box">
           ${ch.logo ? `<img src="${ch.logo}">` : `<div class="card-fallback">${ch.name.substring(0,3)}</div>`}
         </div>
-        <div style="font-size:12px; margin-top:8px; font-weight:500; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; width:100%; text-align:center;">${ch.name}</div>
+        <div class="card-title-bar">${ch.name}</div>
       </div>
     `).join('');
   }
@@ -442,7 +460,7 @@
     container.innerHTML = Object.keys(categories).map(catName => `
       <div class="focusable category-card" tabIndex="0" data-type="category" onclick="selectCategory('${catName}')">
         <div class="card-fallback" style="font-size:16px; color:var(--accent); text-align:center;">${catName}</div>
-        <div style="font-size:11px; color:var(--muted); margin-top:5px;">${categories[catName].length} кан.</div>
+        <div style="font-size:11px; color:var(--muted); margin-top:5px; text-align:center; width:100%;">${categories[catName].length} кан.</div>
       </div>
     `).join('');
   }
