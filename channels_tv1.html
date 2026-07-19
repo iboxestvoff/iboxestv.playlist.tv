@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Телевизор 34 — С подсветкой пульта</title>
+<title>Телевизор 34 — Чистый плеер</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -27,9 +27,7 @@
     font-family: 'Inter', system-ui, sans-serif; overflow: hidden;
   }
 
-  /* ==========================================================================
-     УЛУЧШЕННЫЕ СТИЛИ ФОКУСА ДЛЯ ПУЛЬТА
-     ========================================================================== */
+  /* СТИЛИ ФОКУСА ДЛЯ ПУЛЬТА */
   .focusable {
     border: 3px solid transparent !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -37,7 +35,6 @@
     outline: none !important;
   }
   
-  /* Когда пульт "встал" на элемент (через focus или класс tv-highlight) */
   .focusable:focus, .focusable.tv-highlight {
     border-color: var(--accent) !important;
     transform: scale(1.06);
@@ -150,10 +147,20 @@
   .about-title { font-size: 28px; font-weight: 700; color: var(--accent); margin: 0; }
   .about-desc { font-size: 16px; line-height: 1.5; color: var(--text); margin: 0; }
 
-  /* ПЛЕЕР OSD */
+  /* ПЛЕЕР И СКРЫТИЕ ДЕФОЛТНОЙ ИКОНКИ PLAY */
   .player-screen { position: relative; width: 100vw; height: 100vh; background: #000; }
   .full-media-container { position: absolute; inset: 0; z-index: 1; }
+  
   video, iframe { width: 100%; height: 100%; border: none; background: #000; }
+  
+  /* Прячем встроенную кнопку запуска во всех браузерах (Tizen, WebOS, Chrome, Safari) */
+  video::-webkit-media-controls-start-playback-button,
+  video::-webkit-media-controls-play-button,
+  video::-webkit-media-controls-panel {
+    display: none !important;
+    -webkit-appearance: none;
+  }
+
   .osd-overlay {
     position: absolute; bottom: 0; left: 0; width: 100%;
     background: linear-gradient(0deg, rgba(10,13,20,0.95) 0%, rgba(10,13,20,0.85) 70%, rgba(10,13,20,0) 100%);
@@ -232,6 +239,7 @@
 
   <div id="view-player" class="player-screen hidden">
     <div class="full-media-container">
+      <!-- Убран атрибут controls, чтобы плеер управлялся исключительно скриптом без вызова дефолтных иконок браузера -->
       <video id="tv-video" playsinline></video>
       <iframe id="embedFrame" class="hidden" allow="autoplay; fullscreen" allowfullscreen></iframe>
     </div>
@@ -375,7 +383,6 @@
       renderCategories();
       renderEpgSidebar();
       
-      // Автоматический фокус на первую вкладку при старте для удобства пульта
       setTimeout(() => {
         const firstTab = document.querySelector('.tab-btn.active');
         if(firstTab) firstTab.focus();
@@ -535,6 +542,7 @@
     l.classList.remove('hidden');
     v.classList.add('hidden');
     f.classList.add('hidden');
+    
     if (/(^|\.)vk(video)?\.(com|ru)\/(video_ext\.php|video-)/i.test(ch.url) || ch.url.includes('rutube.ru')) {
       l.classList.add('hidden');
       f.classList.remove('hidden');
@@ -544,6 +552,7 @@
       f.src = u;
       return;
     }
+    
     v.classList.remove('hidden');
     if (Hls.isSupported()) {
       if(hlsInstance) hlsInstance.destroy();
@@ -617,7 +626,6 @@
       e.preventDefault(); 
       nxt.focus(); 
       
-      // Автоматическая прокрутка каруселей за фокусом пульта
       const p = nxt.parentElement;
       if (p && (p.id === 'main-carousel' || p.id === 'categories-carousel')) {
         p.scrollTo({
