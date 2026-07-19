@@ -42,9 +42,7 @@
 
   .hidden { display: none !important; }
 
-  /* ==========================================================================
-     ИСПРАВЛЕННАЯ ШАПКА (Prevent Overlap)
-     ========================================================================== */
+  /* ШАПКА */
   .main-screen { display: flex; flex-direction: column; width: 100vw; height: 100vh; padding: 25px 40px; }
   
   .nav-bar { 
@@ -53,21 +51,21 @@
     justify-content: space-between; 
     margin-bottom: 25px; 
     gap: 20px;
-    flex-wrap: nowrap; /* Запрещаем перенос строк */
+    flex-wrap: nowrap;
   }
   
   .nav-left { 
     display: flex; 
     align-items: center; 
     gap: 25px; 
-    min-width: 0; /* Важно для flex-контейнеров */
+    min-width: 0;
   }
   
   .logo-area { 
     font-family: 'Space Mono', monospace; 
     font-weight: 700; 
     font-size: 24px; 
-    flex-shrink: 0; /* Логотип не должен сжиматься */
+    flex-shrink: 0;
   }
   .logo-area span { color: var(--accent); }
   
@@ -90,7 +88,7 @@
     display: flex; 
     align-items: center; 
     gap: 15px; 
-    flex-shrink: 0; /* Эта часть всегда должна быть видна */
+    flex-shrink: 0;
   }
 
   .search-box {
@@ -102,9 +100,7 @@
 
   .time-clock { font-weight: 700; font-family: 'Space Mono', monospace; font-size: 18px; min-width: 55px; }
 
-  /* ==========================================================================
-     КОНТЕНТ
-     ========================================================================== */
+  /* КОНТЕНТ */
   .content-view { flex: 1; display: flex; flex-direction: column; gap: 15px; min-height: 0; }
   .section-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;}
   .section-label { font-size: 18px; font-weight: 600; color: var(--muted); }
@@ -125,7 +121,7 @@
     position: absolute; top: 8px; right: 12px; font-size: 18px; color: rgba(255,255,255,0.2);
     transition: color 0.2s; cursor: pointer; z-index: 5;
   }
-  .fav-star.is-fav { color: var(--fav) !important; text-shadow: 0 0 8px rgba(261, 193, 7, 0.6); }
+  .fav-star.is-fav { color: var(--fav) !important; text-shadow: 0 0 8px rgba(255, 193, 7, 0.6); }
 
   /* EPG / О НАС */
   .epg-container { display: flex; gap: 25px; height: 100%; min-height: 0; }
@@ -148,7 +144,7 @@
   .about-title { font-size: 28px; font-weight: 700; color: var(--accent); margin: 0; }
   .about-desc { font-size: 16px; line-height: 1.5; color: var(--text); margin: 0; }
 
-  /* PLAYER OSD */
+  /* ПЛЕЕР OSD */
   .player-screen { position: relative; width: 100vw; height: 100vh; background: #000; }
   .full-media-container { position: absolute; inset: 0; z-index: 1; }
   video, iframe { width: 100%; height: 100%; border: none; background: #000; }
@@ -259,8 +255,9 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js"></script>
 <script>
-  const PLAYLIST_URL = 'https://raw.githubusercontent.com/iboxestvoff/televizor34_serverfiles/playlist.m3u';
-  const EPG_URL = 'https://raw.githubusercontent.com/iboxestvoff/televizor34_serverfiles/epg-data/epg.xml';
+  // Исправленные URL-адреса для скачивания из ветки main вашего репозитория
+  const PLAYLIST_URL = 'https://raw.githubusercontent.com/iboxestvoff/televizor34_serverfiles/main/playlist.m3u';
+  const EPG_URL = 'https://raw.githubusercontent.com/iboxestvoff/televizor34_serverfiles/main/epg/epg.xml';
   
   let allChannels = [];
   let filteredChannels = [];
@@ -292,6 +289,7 @@
   async function loadEpg() {
     try {
       const res = await fetch(EPG_URL);
+      if (!res.ok) throw new Error(`Ошибка загрузки EPG: ${res.status}`);
       const text = await res.text();
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(text, "text/xml");
@@ -363,6 +361,7 @@
     await loadEpg();
     try {
       const res = await fetch(PLAYLIST_URL, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`Ошибка загрузки плейлиста: ${res.status}`);
       const text = await res.text();
       allChannels = parseM3U(text);
       filteredChannels = [...allChannels];
@@ -372,7 +371,8 @@
       renderEpgSidebar();
       if(document.activeElement) document.activeElement.blur();
     } catch (e) {
-      document.getElementById('sectionTitle').innerText = "Ошибка сети";
+      document.getElementById('sectionTitle').innerText = "Ошибка сети (Плейлист не найден)";
+      console.error(e);
     }
   }
 
